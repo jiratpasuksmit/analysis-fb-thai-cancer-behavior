@@ -1,0 +1,11 @@
+# nothing identifying should ever land in this repo
+*.txt
+comments*.csv
+judged*.csv
+judged*.jsonl
+dropped_tag_only.csv
+.DS_Store
+__pycache__/
+*.pyc
+.env
+*.key

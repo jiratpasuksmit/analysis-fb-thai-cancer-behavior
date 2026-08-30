@@ -1,0 +1,1009 @@
+{
+  "_readme": "Edit this file to change the label space. The judge is forced to pick only from these ids via --json-schema enum. 'th' is a hint shown to the model so Thai comments map correctly - put real colloquial spellings there. 'short' is the chart label.",
+  "cancer_type": [
+    {
+      "id": "breast",
+      "en": "Breast",
+      "short": "Breast",
+      "th": "มะเร็งเต้านม",
+      "short_th": "เต้านม"
+    },
+    {
+      "id": "lung",
+      "en": "Lung / bronchus",
+      "short": "Lung",
+      "th": "มะเร็งปอด",
+      "short_th": "ปอด"
+    },
+    {
+      "id": "liver",
+      "en": "Liver (hepatocellular)",
+      "short": "Liver",
+      "th": "มะเร็งตับ",
+      "short_th": "ตับ"
+    },
+    {
+      "id": "bile_duct",
+      "en": "Bile duct / cholangiocarcinoma",
+      "short": "Bile duct",
+      "th": "มะเร็งท่อน้ำดี",
+      "short_th": "ท่อน้ำดี"
+    },
+    {
+      "id": "colorectal",
+      "en": "Colon / rectum",
+      "short": "Colorectal",
+      "th": "มะเร็งลำไส้ใหญ่ ทวารหนัก",
+      "short_th": "ลำไส้ใหญ่"
+    },
+    {
+      "id": "stomach",
+      "en": "Stomach / gastric",
+      "short": "Stomach",
+      "th": "มะเร็งกระเพาะอาหาร",
+      "short_th": "กระเพาะอาหาร"
+    },
+    {
+      "id": "esophagus",
+      "en": "Esophagus",
+      "short": "Esophagus",
+      "th": "มะเร็งหลอดอาหาร",
+      "short_th": "หลอดอาหาร"
+    },
+    {
+      "id": "pancreas",
+      "en": "Pancreas",
+      "short": "Pancreas",
+      "th": "มะเร็งตับอ่อน",
+      "short_th": "ตับอ่อน"
+    },
+    {
+      "id": "cervix",
+      "en": "Cervix uteri",
+      "short": "Cervix",
+      "th": "มะเร็งปากมดลูก",
+      "short_th": "ปากมดลูก"
+    },
+    {
+      "id": "uterus",
+      "en": "Uterus / endometrium",
+      "short": "Uterus",
+      "th": "มะเร็งมดลูก เยื่อบุโพรงมดลูก",
+      "short_th": "มดลูก"
+    },
+    {
+      "id": "ovary",
+      "en": "Ovary",
+      "short": "Ovary",
+      "th": "มะเร็งรังไข่",
+      "short_th": "รังไข่"
+    },
+    {
+      "id": "prostate",
+      "en": "Prostate",
+      "short": "Prostate",
+      "th": "มะเร็งต่อมลูกหมาก",
+      "short_th": "ต่อมลูกหมาก"
+    },
+    {
+      "id": "bladder",
+      "en": "Bladder / urinary tract",
+      "short": "Bladder",
+      "th": "มะเร็งกระเพาะปัสสาวะ",
+      "short_th": "กระเพาะปัสสาวะ"
+    },
+    {
+      "id": "kidney",
+      "en": "Kidney",
+      "short": "Kidney",
+      "th": "มะเร็งไต",
+      "short_th": "ไต"
+    },
+    {
+      "id": "thyroid",
+      "en": "Thyroid",
+      "short": "Thyroid",
+      "th": "มะเร็งไทรอยด์",
+      "short_th": "ไทรอยด์"
+    },
+    {
+      "id": "nasopharynx",
+      "en": "Nasopharynx",
+      "short": "Nasopharynx",
+      "th": "มะเร็งหลังโพรงจมูก",
+      "short_th": "หลังโพรงจมูก"
+    },
+    {
+      "id": "head_neck_oral",
+      "en": "Oral cavity / larynx / other head & neck",
+      "short": "Head & neck / oral",
+      "th": "มะเร็งช่องปาก กล่องเสียง ศีรษะและลำคอ",
+      "short_th": "ช่องปาก"
+    },
+    {
+      "id": "brain_cns",
+      "en": "Brain / CNS",
+      "short": "Brain / CNS",
+      "th": "มะเร็งสมอง",
+      "short_th": "สมอง"
+    },
+    {
+      "id": "leukemia",
+      "en": "Leukemia",
+      "short": "Leukemia",
+      "th": "มะเร็งเม็ดเลือดขาว ลูคีเมีย",
+      "short_th": "เม็ดเลือดขาว"
+    },
+    {
+      "id": "lymphoma",
+      "en": "Lymphoma",
+      "short": "Lymphoma",
+      "th": "มะเร็งต่อมน้ำเหลือง",
+      "short_th": "ต่อมน้ำเหลือง"
+    },
+    {
+      "id": "myeloma",
+      "en": "Multiple myeloma",
+      "short": "Myeloma",
+      "th": "มะเร็งไขกระดูก มัยอิโลมา",
+      "short_th": "ไขกระดูก"
+    },
+    {
+      "id": "bone_sarcoma",
+      "en": "Bone / soft-tissue sarcoma",
+      "short": "Bone / sarcoma",
+      "th": "มะเร็งกระดูก เนื้อเยื่ออ่อน",
+      "short_th": "กระดูก"
+    },
+    {
+      "id": "skin",
+      "en": "Skin incl. melanoma",
+      "short": "Skin",
+      "th": "มะเร็งผิวหนัง",
+      "short_th": "ผิวหนัง"
+    },
+    {
+      "id": "testis",
+      "en": "Testis",
+      "short": "Testis",
+      "th": "มะเร็งอัณฑะ",
+      "short_th": "อัณฑะ"
+    },
+    {
+      "id": "gallbladder",
+      "en": "Gallbladder",
+      "short": "Gallbladder",
+      "th": "มะเร็งถุงน้ำดี",
+      "short_th": "ถุงน้ำดี"
+    },
+    {
+      "id": "eye",
+      "en": "Eye / retinoblastoma",
+      "short": "Eye",
+      "th": "มะเร็งตา",
+      "short_th": "ตา"
+    },
+    {
+      "id": "multiple",
+      "en": "More than one distinct primary cancer named",
+      "short": "Multiple primaries",
+      "th": "หลายชนิด",
+      "short_th": "หลายชนิด"
+    },
+    {
+      "id": "other",
+      "en": "A cancer is named but is not in this list",
+      "short": "Other",
+      "th": "อื่น ๆ",
+      "short_th": "อื่น ๆ"
+    },
+    {
+      "id": "unspecified",
+      "en": "Cancer is discussed but the site is never stated",
+      "short": "Site not stated",
+      "th": "เป็นมะเร็งแต่ไม่ระบุชนิด",
+      "short_th": "ไม่ระบุชนิด"
+    },
+    {
+      "id": "not_stated",
+      "en": "No cancer type is named in this comment",
+      "short": "Not stated",
+      "th": "ไม่ได้ระบุชนิดมะเร็ง",
+      "short_th": "ไม่ระบุ"
+    }
+  ],
+  "behavior": [
+    {
+      "id": "screening_checkup",
+      "en": "Went for screening / check-up / mammogram / pap / annual exam",
+      "short": "Screening / check-up",
+      "th": "ตรวจคัดกรอง ตรวจสุขภาพ",
+      "short_th": "ตรวจคัดกรอง"
+    },
+    {
+      "id": "sought_care_prompt",
+      "en": "Went to a doctor or hospital soon after noticing symptoms",
+      "short": "Prompt care",
+      "th": "ไปหาหมอ ไปโรงพยาบาลทันที",
+      "short_th": "ไปหาหมอเร็ว"
+    },
+    {
+      "id": "surgery",
+      "en": "Had or is having surgery",
+      "short": "Surgery",
+      "th": "ผ่าตัด",
+      "short_th": "ผ่าตัด"
+    },
+    {
+      "id": "chemotherapy",
+      "en": "Had or is having chemotherapy",
+      "short": "Chemotherapy",
+      "th": "คีโม เคมีบำบัด",
+      "short_th": "คีโม"
+    },
+    {
+      "id": "radiotherapy",
+      "en": "Had or is having radiation",
+      "short": "Radiotherapy",
+      "th": "ฉายแสง รังสีรักษา",
+      "short_th": "ฉายแสง"
+    },
+    {
+      "id": "targeted_immunotherapy",
+      "en": "Targeted therapy, immunotherapy, hormone therapy",
+      "short": "Targeted / immuno",
+      "th": "ยามุ่งเป้า ภูมิคุ้มกันบำบัด ยาต้านฮอร์โมน",
+      "short_th": "ยามุ่งเป้า"
+    },
+    {
+      "id": "herbal_traditional",
+      "en": "Herbal, traditional or folk remedies",
+      "short": "Herbal / traditional",
+      "th": "สมุนไพร ยาต้ม หมอพื้นบ้าน",
+      "short_th": "สมุนไพร"
+    },
+    {
+      "id": "supplement_alternative",
+      "en": "Supplements, MLM products, detox, alternative clinics",
+      "short": "Supplements / alt",
+      "th": "อาหารเสริม ผลิตภัณฑ์ ดีท็อกซ์ แพทย์ทางเลือก",
+      "short_th": "อาหารเสริม"
+    },
+    {
+      "id": "faith_spiritual",
+      "en": "Merit-making, prayer, amulets, spiritual healing",
+      "short": "Faith / merit",
+      "th": "ทำบุญ สวดมนต์ สะเดาะเคราะห์",
+      "short_th": "ทำบุญ/สวดมนต์"
+    },
+    {
+      "id": "diet_lifestyle",
+      "en": "Changed diet, quit alcohol/smoking, exercise",
+      "short": "Diet / lifestyle",
+      "th": "ปรับอาหาร เลิกเหล้า เลิกบุหรี่ ออกกำลังกาย",
+      "short_th": "ปรับพฤติกรรม"
+    },
+    {
+      "id": "self_medication",
+      "en": "Self-treated with pharmacy or online drugs, no doctor",
+      "short": "Self-medication",
+      "th": "ซื้อยากินเอง",
+      "short_th": "ซื้อยากินเอง"
+    },
+    {
+      "id": "delayed_care",
+      "en": "Noticed symptoms but waited, ignored, or was afraid to go",
+      "short": "Delayed care",
+      "th": "ปล่อยไว้ ไม่กล้าไป รอจนอาการหนัก",
+      "short_th": "ปล่อยไว้"
+    },
+    {
+      "id": "refused_stopped_tx",
+      "en": "Declined or abandoned recommended treatment",
+      "short": "Refused / stopped tx",
+      "th": "ปฏิเสธการรักษา หยุดรักษากลางคัน",
+      "short_th": "ไม่รักษา/หยุดรักษา"
+    },
+    {
+      "id": "second_opinion",
+      "en": "Sought another doctor or changed hospital",
+      "short": "Second opinion",
+      "th": "ขอความเห็นที่สอง เปลี่ยนโรงพยาบาล",
+      "short_th": "เปลี่ยนหมอ"
+    },
+    {
+      "id": "financial_access_issue",
+      "en": "Cost, insurance scheme, travel or queue affected the care",
+      "short": "Cost / access",
+      "th": "ค่ารักษา บัตรทอง ประกันสังคม คิวยาว ระยะทาง",
+      "short_th": "ค่ารักษา/การเข้าถึง"
+    },
+    {
+      "id": "palliative_hospice",
+      "en": "Palliative / end-of-life / home care",
+      "short": "Palliative care",
+      "th": "ประคับประคอง ดูแลระยะสุดท้าย",
+      "short_th": "ประคับประคอง"
+    },
+    {
+      "id": "advice_to_others",
+      "en": "Urging others to get checked or to seek/avoid some treatment",
+      "short": "Advises others",
+      "th": "แนะนำให้คนอื่นไปตรวจ",
+      "short_th": "แนะนำคนอื่น"
+    },
+    {
+      "id": "none_mentioned",
+      "en": "No health-seeking action described",
+      "short": "None mentioned",
+      "th": "ไม่ได้กล่าวถึงการรักษา",
+      "short_th": "ไม่ระบุ"
+    }
+  ],
+  "outcome": [
+    {
+      "id": "in_treatment",
+      "en": "Currently under treatment",
+      "short": "In treatment",
+      "short_th": "กำลังรักษา"
+    },
+    {
+      "id": "remission",
+      "en": "Recovered, in remission, cured, doing well",
+      "short": "Remission",
+      "short_th": "หายแล้ว"
+    },
+    {
+      "id": "progressed",
+      "en": "Recurred, spread, got worse",
+      "short": "Progressed",
+      "short_th": "ลุกลาม"
+    },
+    {
+      "id": "died",
+      "en": "The person died",
+      "short": "Died",
+      "short_th": "เสียชีวิต"
+    },
+    {
+      "id": "not_stated",
+      "en": "Outcome not stated",
+      "short": "Not stated",
+      "short_th": "ไม่ระบุ"
+    }
+  ],
+  "relevance": [
+    {
+      "id": "personal_story",
+      "en": "A specific real case: the commenter or someone they know had or has cancer",
+      "short": "Personal story",
+      "th": "เล่าเคสจริง ตัวเองหรือคนรู้จักเป็นมะเร็ง",
+      "short_th": "เล่าเคสจริง"
+    },
+    {
+      "id": "risk_opinion",
+      "en": "Answers what behaviors cause or raise cancer risk, without a specific case",
+      "short": "Risk opinion",
+      "th": "ตอบว่าพฤติกรรมอะไรเสี่ยงมะเร็ง ไม่ได้เล่าเคส",
+      "short_th": "ความเห็นเรื่องเสี่ยง"
+    },
+    {
+      "id": "advice_info",
+      "en": "General prevention advice, health information, quoted research or article",
+      "short": "Advice / info",
+      "th": "ให้ความรู้ คำแนะนำ อ้างงานวิจัย",
+      "short_th": "ให้ความรู้"
+    },
+    {
+      "id": "promotion",
+      "en": "Selling or promoting a product, supplement, clinic or service",
+      "short": "Promotion",
+      "th": "ขายของ โฆษณาผลิตภัณฑ์",
+      "short_th": "ขายของ"
+    },
+    {
+      "id": "off_topic",
+      "en": "Chit-chat, encouragement, jokes, tagging, unrelated to cancer or its risks",
+      "short": "Off-topic",
+      "th": "คุยเล่น ให้กำลังใจ แท็กเพื่อน ไม่เกี่ยว",
+      "short_th": "ไม่เกี่ยวข้อง"
+    }
+  ],
+  "risk_behavior": [
+    {
+      "id": "stress",
+      "en": "Stress, anxiety, overthinking, emotional strain",
+      "short": "Stress",
+      "th": "เครียด ความเครียด คิดมาก วิตกกังวล กดดัน",
+      "short_th": "ความเครียด",
+      "group": "stress",
+      "match": [
+        "เครียด",
+        "กังวล",
+        "คิดมาก",
+        "กดดัน",
+        "นอยด์"
+      ]
+    },
+    {
+      "id": "poor_sleep",
+      "en": "Sleeping late, too little sleep, irregular sleep",
+      "short": "Poor sleep",
+      "th": "นอนดึก นอนน้อย อดนอน นอนไม่เป็นเวลา",
+      "short_th": "นอนดึก/นอนน้อย",
+      "group": "rest_work",
+      "match": [
+        "นอน",
+        "อดนอน",
+        "พักผ่อน"
+      ]
+    },
+    {
+      "id": "overwork",
+      "en": "Working too hard, no rest, pushing the body",
+      "short": "Overwork",
+      "th": "ทำงานหนัก โหมงาน พักผ่อนน้อย",
+      "short_th": "ทำงานหนัก",
+      "group": "rest_work",
+      "match": [
+        "ทำงานหนัก",
+        "โหมงาน",
+        "งานหนัก",
+        "ทำงานทุกวัน",
+        "เข้าเวร",
+        "ชม."
+      ]
+    },
+    {
+      "id": "processed_meat",
+      "en": "Processed meat and factory food: sausage, ham, bacon, meatballs, instant food",
+      "short": "Processed food",
+      "th": "อาหารแปรรูป ไส้กรอก แฮม เบคอน ลูกชิ้น หมูยอ บะหมี่กึ่งสำเร็จรูป",
+      "short_th": "อาหารแปรรูป",
+      "group": "food_drink",
+      "match": [
+        "แปรรูป",
+        "ไส้กรอก",
+        "แฮม",
+        "เบคอน",
+        "ลูกชิ้น",
+        "หมูยอ",
+        "มาม่า",
+        "กึ่งสำเร็จรูป",
+        "แหนม",
+        "เซเว่น",
+        "ฟาสต์ฟู้ด"
+      ]
+    },
+    {
+      "id": "grilled_charred",
+      "en": "Grilled, barbecued, charred or burnt food",
+      "short": "Grilled / charred",
+      "th": "ปิ้งย่าง หมูกระทะ ของไหม้ เกรียม",
+      "short_th": "ปิ้งย่าง",
+      "group": "food_drink",
+      "match": [
+        "ปิ้ง",
+        "ย่าง",
+        "กระทะ",
+        "ไหม้",
+        "เกรียม"
+      ]
+    },
+    {
+      "id": "fried_fatty",
+      "en": "Deep-fried and fatty food",
+      "short": "Fried / fatty",
+      "th": "ของทอด อาหารมัน ๆ",
+      "short_th": "ของทอด/ของมัน",
+      "group": "food_drink",
+      "match": [
+        "ทอด",
+        "มัน",
+        "ไขมัน",
+        "กะทิ",
+        "เนย",
+        "ชีส",
+        "แป้ง"
+      ]
+    },
+    {
+      "id": "fermented_pickled",
+      "en": "Fermented or pickled food",
+      "short": "Fermented / pickled",
+      "th": "ของหมักดอง ปลาร้า ผักดอง",
+      "short_th": "ของหมักดอง",
+      "group": "food_drink",
+      "match": [
+        "หมัก",
+        "ดอง",
+        "ปลาร้า"
+      ]
+    },
+    {
+      "id": "reheated_leftover",
+      "en": "Leftovers, food kept overnight, repeatedly reheated, microwaved",
+      "short": "Reheated food",
+      "th": "อาหารค้างคืน อุ่นซ้ำ เข้าเวฟ ไมโครเวฟ",
+      "short_th": "อาหารค้างคืน",
+      "group": "food_drink",
+      "match": [
+        "ค้างคืน",
+        "อุ่น",
+        "เวฟ",
+        "ไมโครเวฟ",
+        "ตู้เย็น",
+        "ซ้ำ"
+      ]
+    },
+    {
+      "id": "raw_undercooked",
+      "en": "Raw or undercooked food, raw freshwater fish, koi, larb dib",
+      "short": "Raw food",
+      "th": "ของดิบ ปลาดิบ ก้อย ลาบดิบ ปลาร้าดิบ",
+      "short_th": "ของดิบ",
+      "group": "food_drink",
+      "match": [
+        "ดิบ",
+        "ก้อย",
+        "ลาบ",
+        "ไม่สุก"
+      ]
+    },
+    {
+      "id": "strong_flavour",
+      "en": "Very salty or very spicy food",
+      "short": "Salty / spicy",
+      "th": "รสจัด เค็มจัด เผ็ดจัด",
+      "short_th": "รสจัด",
+      "group": "food_drink",
+      "match": [
+        "รสจัด",
+        "เค็ม",
+        "เผ็ด"
+      ]
+    },
+    {
+      "id": "sugary_drinks",
+      "en": "Sugar and sweet drinks: soft drinks, bubble tea, sweetened coffee, desserts",
+      "short": "Sugar / sweet drinks",
+      "th": "น้ำตาล ของหวาน น้ำอัดลม ชานม กาแฟหวาน น้ำหวาน",
+      "short_th": "ของหวาน/น้ำหวาน",
+      "group": "food_drink",
+      "match": [
+        "หวาน",
+        "น้ำตาล",
+        "อัดลม",
+        "ชานม",
+        "ไข่มุก",
+        "กาแฟ",
+        "ขนม",
+        "เบเกอรี่"
+      ]
+    },
+    {
+      "id": "irregular_meals",
+      "en": "Eating at irregular times, skipping meals, eating late at night",
+      "short": "Irregular meals",
+      "th": "กินไม่ตรงเวลา อดข้าว กินดึก กินแล้วนอน",
+      "short_th": "กินไม่เป็นเวลา",
+      "group": "food_drink",
+      "match": [
+        "ไม่ตรงเวลา",
+        "อดข้าว",
+        "กินดึก",
+        "กินแล้วนอน",
+        "ไม่เป็นเวลา",
+        "กินเยอะ",
+        "กินจุ"
+      ]
+    },
+    {
+      "id": "low_veg_fibre",
+      "en": "Few vegetables, little fibre, no fruit",
+      "short": "Low veg / fibre",
+      "th": "ไม่กินผัก กินผักน้อย ไม่กินผลไม้",
+      "short_th": "ไม่กินผัก",
+      "group": "food_drink",
+      "match": [
+        "ผัก",
+        "ผลไม้",
+        "ไฟเบอร์"
+      ]
+    },
+    {
+      "id": "unhealthy_diet_general",
+      "en": "Unhealthy eating stated in general terms, without naming a specific food",
+      "short": "Unhealthy diet",
+      "th": "กินของไม่มีประโยชน์ จังก์ฟู้ด กินมั่ว ไม่ดูแลเรื่องกิน",
+      "short_th": "กินไม่มีประโยชน์",
+      "group": "food_drink",
+      "match": [
+        "ไม่มีประโยชน์",
+        "จังก",
+        "ฟาสต์ฟู้ด",
+        "ตามใจ",
+        "กินมั่ว",
+        "บุฟเฟ่",
+        "ไม่ดูแล",
+        "กินอาหารเดิม",
+        "กินอาหารซ้ำ"
+      ]
+    },
+    {
+      "id": "smoking",
+      "en": "Smoking, tobacco, second-hand smoke",
+      "short": "Smoking",
+      "th": "สูบบุหรี่ ยาสูบ ควันบุหรี่มือสอง",
+      "short_th": "บุหรี่",
+      "group": "substances",
+      "match": [
+        "บุหรี่",
+        "ยาสูบ",
+        "สูบ"
+      ]
+    },
+    {
+      "id": "alcohol",
+      "en": "Drinking alcohol",
+      "short": "Alcohol",
+      "th": "ดื่มเหล้า เบียร์ เมา",
+      "short_th": "เหล้า",
+      "group": "substances",
+      "match": [
+        "เหล้า",
+        "เบียร์",
+        "เมา",
+        "สุรา",
+        "แอลกอฮอล",
+        "ดื่ม"
+      ]
+    },
+    {
+      "id": "recreational_drugs",
+      "en": "Cannabis, kratom, amphetamines or other recreational drugs",
+      "short": "Drugs",
+      "th": "กัญชา กระท่อม ยาบ้า ยาเสพติด",
+      "short_th": "ยาเสพติด",
+      "group": "substances",
+      "match": [
+        "กัญชา",
+        "กระท่อม",
+        "ยาบ้า",
+        "ยาเสพติด"
+      ]
+    },
+    {
+      "id": "no_exercise",
+      "en": "No exercise, sitting all day, sedentary",
+      "short": "No exercise",
+      "th": "ไม่ออกกำลังกาย นั่งนาน ไม่ขยับ",
+      "short_th": "ไม่ออกกำลังกาย",
+      "group": "body_habits",
+      "match": [
+        "ออกกำลัง",
+        "ขยับ",
+        "นั่งนาน"
+      ]
+    },
+    {
+      "id": "overweight",
+      "en": "Obesity, being overweight",
+      "short": "Overweight",
+      "th": "อ้วน น้ำหนักเกิน",
+      "short_th": "น้ำหนักเกิน",
+      "group": "body_habits",
+      "match": [
+        "อ้วน",
+        "น้ำหนัก"
+      ]
+    },
+    {
+      "id": "chronic_condition",
+      "en": "An existing chronic condition given as the cause: diabetes, uncontrolled blood sugar, hypertension, hepatitis as a long-term illness",
+      "short": "Chronic condition",
+      "th": "โรคประจำตัว เบาหวาน คุมน้ำตาลไม่ได้ ความดัน",
+      "short_th": "โรคประจำตัว",
+      "group": "disease",
+      "match": [
+        "เบาหวาน",
+        "ความดัน",
+        "โรคประจำตัว",
+        "คุมน้ำตาล"
+      ]
+    },
+    {
+      "id": "irregular_bowel",
+      "en": "Irregular toilet habits, constipation, holding urine",
+      "short": "Bowel habits",
+      "th": "ขับถ่ายไม่เป็นเวลา ท้องผูก กลั้นปัสสาวะ",
+      "short_th": "ขับถ่ายไม่ปกติ",
+      "group": "body_habits",
+      "match": [
+        "ขับถ่าย",
+        "ท้องผูก",
+        "กลั้น"
+      ]
+    },
+    {
+      "id": "chemicals",
+      "en": "Chemical exposure: pesticides, preservatives, additives, hair dye, plastics heated",
+      "short": "Chemicals",
+      "th": "สารเคมี ยาฆ่าแมลง สารกันบูด ยาย้อมผม พลาสติกโดนความร้อน",
+      "short_th": "สารเคมี",
+      "group": "environment",
+      "match": [
+        "สารเคมี",
+        "ยาฆ่าแมลง",
+        "กันบูด",
+        "ย้อมผม",
+        "พลาสติก",
+        "สารพิษ",
+        "อัลฟาท็อก",
+        "แอสเบส",
+        "สารก่อมะเร็ง"
+      ]
+    },
+    {
+      "id": "smoke_fumes_home",
+      "en": "Smoke or fumes at home: incense, cooking and grilling smoke, wood fire, mosquito coils",
+      "short": "Household smoke",
+      "th": "ควันธูป จุดธูป ควันจากการทำอาหาร ควันเตาย่าง ควันไฟ ยาจุดกันยุง",
+      "short_th": "ควันในบ้าน",
+      "group": "environment",
+      "match": [
+        "ธูป",
+        "ควัน",
+        "เตา",
+        "ยากันยุง",
+        "ฟืน"
+      ]
+    },
+    {
+      "id": "pollution",
+      "en": "Outdoor or ambient air pollution: PM2.5, traffic fumes, factory emissions",
+      "short": "Air pollution",
+      "th": "ฝุ่น PM2.5 มลพิษทางอากาศ ควันรถ ควันโรงงาน",
+      "short_th": "มลพิษทางอากาศ",
+      "group": "environment",
+      "match": [
+        "ฝุ่น",
+        "PM",
+        "มลพิษ",
+        "ควันรถ"
+      ]
+    },
+    {
+      "id": "hormones_meds",
+      "en": "Contraceptive pills, hormones, long-term medication, supplements taken as drugs",
+      "short": "Hormones / meds",
+      "th": "ยาคุม ฮอร์โมน กินยานาน",
+      "short_th": "ฮอร์โมน/ยา",
+      "group": "substances",
+      "match": [
+        "ยาคุม",
+        "ฮอร์โมน",
+        "กินยา"
+      ]
+    },
+    {
+      "id": "infection",
+      "en": "Infection-linked causes: hepatitis, HPV, liver fluke",
+      "short": "Infection",
+      "th": "ไวรัสตับอักเสบ HPV พยาธิใบไม้ตับ",
+      "short_th": "การติดเชื้อ",
+      "group": "disease",
+      "match": [
+        "ตับอักเสบ",
+        "HPV",
+        "พยาธิ",
+        "ไวรัส",
+        "เชื้อ"
+      ]
+    },
+    {
+      "id": "no_screening",
+      "en": "Never getting checked, ignoring symptoms, avoiding the doctor",
+      "short": "No check-ups",
+      "th": "ไม่เคยตรวจ ปล่อยไว้ ไม่ไปหาหมอ",
+      "short_th": "ไม่ตรวจสุขภาพ",
+      "group": "no_checkup",
+      "match": [
+        "ไม่ตรวจ",
+        "ไม่เคยตรวจ",
+        "ปล่อยไว้",
+        "ไม่หาหมอ",
+        "ไม่ยอมหาหมอ",
+        "ไม่กล้าไป"
+      ]
+    },
+    {
+      "id": "genetic_family",
+      "en": "Heredity or family history given as the cause (not a behavior, but commonly answered)",
+      "short": "Genetics / family",
+      "th": "กรรมพันธุ์ ญาติเป็น พันธุกรรม",
+      "short_th": "กรรมพันธุ์",
+      "group": "heredity",
+      "match": [
+        "กรรมพันธุ์",
+        "พันธุกรรม",
+        "ญาติ"
+      ]
+    },
+    {
+      "id": "other_risk",
+      "en": "A risk is named but does not fit any category above",
+      "short": "Other risk",
+      "th": "ความเสี่ยงอื่น ๆ",
+      "short_th": "อื่น ๆ",
+      "group": "other_group",
+      "match": []
+    },
+    {
+      "id": "none_mentioned",
+      "en": "No risk behavior or cause is mentioned",
+      "short": "None mentioned",
+      "th": "ไม่ได้ระบุพฤติกรรมเสี่ยง",
+      "short_th": "ไม่ระบุ",
+      "group": "none_group",
+      "match": []
+    }
+  ],
+  "relation": [
+    {
+      "id": "self",
+      "en": "The commenter's own behavior or own cancer",
+      "short": "Self",
+      "th": "ตัวเอง",
+      "short_th": "ตัวเอง"
+    },
+    {
+      "id": "family",
+      "en": "A family member: parent, spouse, child, sibling, relative",
+      "short": "Family",
+      "th": "คนในครอบครัว พ่อ แม่ สามี ภรรยา ลูก ญาติ",
+      "short_th": "ครอบครัว"
+    },
+    {
+      "id": "friend",
+      "en": "A friend, neighbour, colleague, acquaintance",
+      "short": "Friend",
+      "th": "เพื่อน คนรู้จัก เพื่อนร่วมงาน",
+      "short_th": "เพื่อน"
+    },
+    {
+      "id": "general",
+      "en": "People in general, no particular person",
+      "short": "General",
+      "th": "คนทั่วไป ไม่เจาะจง",
+      "short_th": "ทั่วไป"
+    },
+    {
+      "id": "unclear",
+      "en": "Cannot tell whose behavior or case this is",
+      "short": "Unclear",
+      "th": "ไม่ชัดเจน",
+      "short_th": "ไม่ชัดเจน"
+    }
+  ],
+  "risk_group": [
+    {
+      "id": "stress",
+      "en": "Stress",
+      "short": "Stress",
+      "short_th": "ความเครียด",
+      "members": [
+        "stress"
+      ]
+    },
+    {
+      "id": "rest_work",
+      "en": "Sleep & overwork",
+      "short": "Sleep & overwork",
+      "short_th": "การนอนและการทำงานหนัก",
+      "members": [
+        "poor_sleep",
+        "overwork"
+      ]
+    },
+    {
+      "id": "food_drink",
+      "en": "Food & drink",
+      "short": "Food & drink",
+      "short_th": "อาหารและเครื่องดื่ม",
+      "members": [
+        "processed_meat",
+        "grilled_charred",
+        "fried_fatty",
+        "fermented_pickled",
+        "reheated_leftover",
+        "raw_undercooked",
+        "strong_flavour",
+        "sugary_drinks",
+        "irregular_meals",
+        "low_veg_fibre",
+        "unhealthy_diet_general"
+      ]
+    },
+    {
+      "id": "substances",
+      "en": "Smoking, alcohol, drugs & medication",
+      "short": "Smoking, alcohol & drugs",
+      "short_th": "บุหรี่ เหล้า ยาเสพติด และยา",
+      "members": [
+        "smoking",
+        "alcohol",
+        "recreational_drugs",
+        "hormones_meds"
+      ]
+    },
+    {
+      "id": "body_habits",
+      "en": "Exercise, weight & bowel habits",
+      "short": "Exercise & weight",
+      "short_th": "การออกกำลังกาย น้ำหนัก การขับถ่าย",
+      "members": [
+        "no_exercise",
+        "overweight",
+        "irregular_bowel"
+      ]
+    },
+    {
+      "id": "environment",
+      "en": "Environment & chemicals",
+      "short": "Environment & chemicals",
+      "short_th": "สิ่งแวดล้อมและสารเคมี",
+      "members": [
+        "chemicals",
+        "smoke_fumes_home",
+        "pollution"
+      ]
+    },
+    {
+      "id": "disease",
+      "en": "Disease they already had",
+      "short": "Existing disease",
+      "short_th": "โรคที่เป็นอยู่ก่อน",
+      "members": [
+        "chronic_condition",
+        "infection"
+      ]
+    },
+    {
+      "id": "heredity",
+      "en": "Heredity — not a behaviour",
+      "short": "Heredity",
+      "short_th": "กรรมพันธุ์",
+      "members": [
+        "genetic_family"
+      ]
+    },
+    {
+      "id": "no_checkup",
+      "en": "Never getting checked",
+      "short": "Never checked",
+      "short_th": "ไม่เคยตรวจสุขภาพ",
+      "members": [
+        "no_screening"
+      ]
+    },
+    {
+      "id": "other_group",
+      "en": "Other risks named",
+      "short": "Other",
+      "short_th": "อื่น ๆ",
+      "members": [
+        "other_risk"
+      ]
+    },
+    {
+      "id": "none_group",
+      "en": "No risk mentioned",
+      "short": "None mentioned",
+      "short_th": "ไม่ระบุ",
+      "members": [
+        "none_mentioned"
+      ]
+    }
+  ]
+}

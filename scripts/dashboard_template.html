@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cancer comment dashboard</title>
+<style>
+:root{
+  color-scheme: light;
+  --page:#f9f9f7; --surface:#fcfcfb;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hair:rgba(11,11,11,.10);
+  --series:#2a78d6; --series-2:#eb6834; --series-soft:rgba(42,120,214,.14);
+  --critical:#d03b3b; --warn-bg:rgba(250,178,25,.14); --warn-line:#fab219;
+  --h0:#fcfcfb; --h1:#cde2fb; --h2:#9ec5f4; --h3:#6da7ec; --h4:#3987e5; --h5:#256abf; --h6:#184f95;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0d0d0d; --surface:#1a1a19;
+    --ink:#fff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --hair:rgba(255,255,255,.10);
+    --series:#3987e5; --series-2:#d95926; --series-soft:rgba(57,135,229,.20);
+    --warn-bg:rgba(250,178,25,.10);
+    --h0:#1a1a19; --h1:#104281; --h2:#184f95; --h3:#1c5cab; --h4:#2a78d6; --h5:#5598e7; --h6:#86b6ef;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19;
+  --ink:#fff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --hair:rgba(255,255,255,.10);
+  --series:#3987e5; --series-2:#d95926; --series-soft:rgba(57,135,229,.20);
+  --warn-bg:rgba(250,178,25,.10);
+  --h0:#1a1a19; --h1:#104281; --h2:#184f95; --h3:#1c5cab; --h4:#2a78d6; --h5:#5598e7; --h6:#86b6ef;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);
+  font:14px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;}
+.wrap{max-width:1180px;margin:0 auto;padding:24px 20px 80px}
+h1{font-size:20px;font-weight:650;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:14px;font-weight:600;margin:0;letter-spacing:-.005em}
+.sub{color:var(--muted);font-size:12.5px;margin:0}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}
+.hgroup{display:flex;gap:6px;flex-shrink:0}
+
+/* framing banner — the most important element on the page */
+.banner{background:var(--warn-bg);border:1px solid var(--hair);border-left:3px solid var(--warn-line);
+  border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:13px;line-height:1.6;color:var(--ink-2)}
+.banner b{color:var(--ink)}
+
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:18px 18px 16px;margin-bottom:14px}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.hint{color:var(--muted);font-size:11.5px}
+
+.viewbar{display:flex;gap:0;flex-wrap:wrap;border:1px solid var(--hair);border-radius:8px;
+  overflow:hidden;margin-bottom:8px;background:var(--surface);width:fit-content;max-width:100%}
+.viewbar button{border:0;border-radius:0;padding:9px 15px;font-size:13px;
+  border-right:1px solid var(--hair);white-space:nowrap}
+.viewbar button:last-child{border-right:0}
+.viewbar button.on{background:var(--series);color:#fff;font-weight:600}
+.viewbar button.on small{color:rgba(255,255,255,.85)}
+.viewbar small{color:var(--muted);margin-left:6px;font-size:11.5px;font-variant-numeric:tabular-nums}
+.viewnote{margin:0 0 14px;font-size:12px;color:var(--muted)}
+.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+input[type=search],select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:6px 10px}
+input[type=search]{min-width:200px;flex:1}
+label.chk{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--hair);border-radius:6px;padding:6px 10px;cursor:pointer}
+button{font:inherit;font-size:12.5px;color:var(--ink);background:var(--surface);
+  border:1px solid var(--hair);border-radius:6px;padding:6px 11px;cursor:pointer}
+button:hover{background:var(--series-soft)}
+button.on{background:var(--series);color:#fff;border-color:transparent}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:28px;margin-bottom:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 6px 4px 10px;border-radius:999px;
+  background:var(--series-soft);color:var(--ink);border:1px solid var(--hair)}
+.chip b{font-weight:600}
+.chip button{border:0;background:none;padding:0 4px;font-size:14px;line-height:1;color:var(--ink-2);cursor:pointer}
+.chip button:hover{background:none;color:var(--critical)}
+.andor{display:inline-flex;border:1px solid var(--hair);border-radius:6px;overflow:hidden}
+.andor button{border:0;border-radius:0;padding:5px 10px;font-size:11.5px}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:14px}
+.tile{background:var(--surface);border:1px solid var(--hair);border-radius:var(--r);padding:14px 16px}
+.tile .v{font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+.tile .k{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:880px){.grid2{grid-template-columns:1fr}}
+.bars{display:flex;flex-direction:column;gap:2px}
+.bar{display:grid;grid-template-columns:150px 1fr 74px;align-items:center;gap:10px;
+  padding:3px 4px;border-radius:5px;cursor:pointer;border:0;background:none;text-align:left;width:100%}
+.bar:hover{background:var(--series-soft)}
+.bar .lab{font-size:12px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .track{display:block;height:14px;background:linear-gradient(var(--grid),var(--grid)) left center/100% 1px no-repeat}
+.bar .fill{display:block;height:14px;background:var(--series);border-radius:0 4px 4px 0;min-width:2px;transition:width .18s}
+.bar .val{font-size:12px;color:var(--ink-2);text-align:right;font-variant-numeric:tabular-nums}
+.bar.dim{opacity:.32}
+.bar.sel .lab,.bar.sel .val{color:var(--ink);font-weight:600}
+
+/* paired comparison bars */
+.cmp{display:grid;grid-template-columns:150px 1fr 1fr;gap:10px;align-items:center;padding:3px 4px}
+.cmp .lab{font-size:12px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cmp .side{display:flex;align-items:center;gap:6px}
+.cmp .side.l{flex-direction:row-reverse}
+.cmp .b{height:12px;border-radius:3px;min-width:2px}
+.cmp .b.s1{background:var(--series);border-radius:3px 0 0 3px}
+.cmp .b.s2{background:var(--series-2);border-radius:0 3px 3px 0}
+.cmp .n{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:30px}
+.legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);margin-bottom:10px;flex-wrap:wrap}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
+
+/* heatmaps */
+.hm-scroll{overflow-x:auto}
+table.hm{border-collapse:separate;border-spacing:2px;font-size:11.5px}
+table.hm th{font-weight:500;color:var(--ink-2);text-align:left;font-size:11px}
+table.hm thead th{vertical-align:bottom;height:120px;padding:0}
+table.hm thead th>div{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;
+  max-height:116px;overflow:hidden;color:var(--muted)}
+table.hm tbody th{padding-right:8px;white-space:nowrap;position:sticky;left:0;background:var(--surface);z-index:1}
+table.hm tbody th span{color:var(--muted);font-weight:400;font-variant-numeric:tabular-nums}
+table.hm td{padding:0}
+.cell{width:40px;height:26px;border-radius:4px;border:0;cursor:pointer;font:inherit;font-size:10.5px;
+  font-variant-numeric:tabular-nums;color:var(--ink-2);background:var(--h0);display:block;line-height:26px;text-align:center}
+.cell.b0{background:var(--h0);color:var(--muted);box-shadow:inset 0 0 0 1px var(--grid)}
+.cell.b1{background:var(--h1)} .cell.b2{background:var(--h2)} .cell.b3{background:var(--h3)}
+.cell.b4{background:var(--h4);color:#fff} .cell.b5{background:var(--h5);color:#fff} .cell.b6{background:var(--h6);color:#fff}
+.cell.na{background:transparent;box-shadow:none;cursor:default}
+:root[data-theme="dark"] .cell.b1,:root[data-theme="dark"] .cell.b2,:root[data-theme="dark"] .cell.b3{color:#fff}
+:root[data-theme="dark"] .cell.b5,:root[data-theme="dark"] .cell.b6{color:#0b0b0b}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .cell.b1,:root:not([data-theme="light"]) .cell.b2,:root:not([data-theme="light"]) .cell.b3{color:#fff}
+:root:not([data-theme="light"]) .cell.b5,:root:not([data-theme="light"]) .cell.b6{color:#0b0b0b}}
+.cell:not(.na):hover{outline:2px solid var(--ink);outline-offset:1px}
+.cell.sel{outline:2px solid var(--ink);outline-offset:1px}
+.scale{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);margin-top:12px;flex-wrap:wrap}
+.scale i{width:22px;height:10px;border-radius:2px;display:inline-block}
+
+/* word cloud */
+.cloudnote{margin:-4px 0 8px;font-size:11.5px;line-height:1.7;color:var(--muted);min-height:24px}
+.cloudnote b{color:var(--ink);font-weight:600}
+.cloudnote button{padding:2px 9px;font-size:11.5px;margin-left:8px;vertical-align:1px}
+#cloud{width:100%;height:340px;display:block}
+#cloud text{cursor:pointer;font-family:inherit}
+#cloud text:hover{fill:var(--series)!important;text-decoration:underline}
+
+/* verbatim browser */
+.vgrid{display:grid;grid-template-columns:230px 1fr;gap:14px}
+@media(max-width:760px){.vgrid{grid-template-columns:1fr}}
+.vlist,.vquotes{max-height:430px;overflow-y:auto;border:1px solid var(--hair);border-radius:6px;padding:6px}
+.vitem{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;border:0;
+  background:none;padding:6px 8px;border-radius:5px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.vitem:hover{background:var(--series-soft)}
+.vitem.on{background:var(--series);color:#fff;font-weight:600}
+.vitem span.c{font-variant-numeric:tabular-nums;opacity:.7;flex-shrink:0}
+.vq{padding:7px 9px;border-bottom:1px solid var(--grid);font-size:13px;line-height:1.6}
+.vq:last-child{border-bottom:0}
+.vq .id{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;margin-right:8px}
+.vq .n{color:var(--muted);font-size:11px;margin-left:6px}
+.vhead{font-size:11.5px;color:var(--muted);padding:4px 9px 8px}
+
+/* table */
+table.raw{width:100%;border-collapse:collapse;font-size:12.5px}
+table.raw th{text-align:left;font-weight:600;font-size:11.5px;color:var(--muted);
+  border-bottom:1px solid var(--axis);padding:6px 8px;white-space:nowrap}
+table.raw td{border-bottom:1px solid var(--grid);padding:8px;vertical-align:top}
+table.raw tr.r{cursor:pointer}
+table.raw tr.r:hover td{background:var(--series-soft)}
+td.txt{max-width:400px}
+.trunc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:999px;background:var(--series-soft);
+  color:var(--ink-2);margin:1px 3px 1px 0;white-space:nowrap}
+.tag.warn{background:rgba(208,59,59,.13);color:var(--critical)}
+.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.lowconf{color:var(--critical);font-weight:600}
+tr.detail td{background:var(--page);font-size:12.5px}
+.dl{display:grid;grid-template-columns:120px 1fr;gap:4px 14px}
+.dl dt{color:var(--muted);font-size:11.5px}
+.dl dd{margin:0}
+.empty{color:var(--muted);padding:24px 8px;text-align:center}
+footer{color:var(--muted);font-size:11.5px;margin-top:24px;line-height:1.7}
+footer a{color:var(--ink-2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1 id="title">Cancer comment dashboard</h1>
+    <p class="sub" id="meta"></p>
+  </div>
+  <div class="hgroup">
+    <button id="lang" title="ไทย / English">ไทย</button>
+    <button id="theme" title="Toggle light / dark">◐</button>
+  </div>
+</header>
+
+<div class="banner" id="banner"></div>
+
+<div class="viewbar" id="viewbar"></div>
+<p class="viewnote" id="viewnote"></p>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="ค้นหา / search…">
+  <select id="minconf">
+    <option value="0">All confidences</option>
+    <option value="0.6">Confidence ≥ 0.6</option>
+    <option value="0.8">Confidence ≥ 0.8</option>
+  </select>
+  <label class="chk"><input type="checkbox" id="exnm" checked> <span id="lblExnm">Exclude “none mentioned”</span></label>
+  <button id="reset">Reset</button>
+  <button id="dl">Download CSV</button>
+</div>
+<div class="chips" id="chips"></div>
+
+<div class="tiles" id="tiles"></div>
+
+<div class="grid2">
+  <section class="card">
+    <div class="card-head"><h2 id="h_risk">Most cited risk behaviour</h2>
+      <span class="hint"><span id="riskN"></span>
+        <span class="andor" style="margin-left:8px">
+          <button data-level="group" id="lvGroup">Category</button><button data-level="risk" id="lvRisk">Detail</button>
+        </span></span></div>
+    <div class="bars" id="riskBars"></div>
+  </section>
+  <section class="card">
+    <div class="card-head"><h2 id="h_cloud">In their own words</h2>
+      <span class="hint" id="cloudHint"></span></div>
+    <p class="cloudnote" id="cloudNote"></p>
+    <svg id="cloud" role="img" aria-label="word cloud of the phrases commenters used"></svg>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head">
+    <h2 id="h_cmp">What we blame in ourselves vs. in others</h2>
+    <span class="hint" id="cmpN"></span>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--series)"></i><span id="lg_a">Talking about themselves</span></span>
+    <span><i style="background:var(--series-2)"></i><span id="lg_b">Talking about someone else</span></span>
+    <span class="hint" id="lg_note"></span>
+  </div>
+  <div id="cmp"></div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2 id="h_cooc">Risks named together</h2>
+    <span class="hint" id="coocHint">click a cell to filter both</span>
+  </div>
+  <div class="hm-scroll"><table class="hm" id="cooc"></table></div>
+  <div class="scale" id="coocScale"></div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2 id="h_matrix">Risk behaviour by</h2>
+    <span class="hint">
+      <select id="rowDim" style="font-size:11.5px;padding:3px 6px">
+        <option value="relation">whose case</option>
+        <option value="cancer">cancer type</option>
+        <option value="relevance">comment kind</option>
+      </select>
+      <select id="hmMode" style="font-size:11.5px;padding:3px 6px">
+        <option value="pct">% of that row</option>
+        <option value="count">comment count</option>
+      </select>
+      <select id="minN" style="font-size:11.5px;padding:3px 6px">
+        <option value="1">all rows</option>
+        <option value="3" selected>n ≥ 3</option>
+        <option value="10">n ≥ 10</option>
+      </select>
+    </span>
+  </div>
+  <div class="hm-scroll"><table class="hm" id="hm"></table></div>
+  <div class="scale" id="scale"></div>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2 id="h_verb">What people actually wrote, per risk</h2>
+    <span class="hint">
+      <label class="chk" style="padding:3px 8px"><input type="checkbox" id="verbAll"> <span id="lblVerbAll">all phrases in those comments</span></label>
+    </span>
+  </div>
+  <div class="vgrid">
+    <div class="vlist" id="verbRisks"></div>
+    <div class="vquotes" id="verbQuotes"></div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2 id="h_raw">Raw results</h2><span class="hint" id="tblN"></span></div>
+  <div style="overflow-x:auto"><table class="raw" id="raw"></table></div>
+  <div id="more" style="text-align:center;margin-top:12px"></div>
+</section>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/null;
+const RECS = DATA.records, L = DATA.labels || {};
+const NOISE = new Set(["off_topic","promotion"]);
+const NO_CANCER = new Set(["not_stated","","unspecified"]);
+let LANG = (navigator.language||"").startsWith("th") ? "th" : "en";
+
+const lk     = (k,id) => (L[k] && L[k][id]) || null;
+const nameOf = (k,id) => { const e=lk(k,id); if(!e) return id||"—";
+                           return (LANG==="th" ? (e.short_th||e.short||e.en) : (e.short||e.en)) || id; };
+const fullOf = (k,id) => { const e=lk(k,id); return (e && (LANG==="th" ? (e.th||e.en) : e.en)) || id || "—"; };
+const thOf   = (k,id) => { const e=lk(k,id); return (e && e.th) || ""; };
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const GMAP = DATA.risk_of_group || {};
+const GLAB = Object.fromEntries((DATA.risk_group||[]).map(g=>[g.id,g]));
+const GORDER = (DATA.risk_group||[]).map(g=>g.id);
+const groupOf = b => GMAP[b] || "other_group";
+const gName = id => { const g=GLAB[id]; if(!g) return id;
+  return (LANG==="th" ? (g.short_th||g.short||g.en) : (g.short||g.en)) || id; };
+const gFull = id => { const g=GLAB[id]; return (g && g.en) || id; };
+
+const DIM = {
+  risk:      {key:"risk_behavior", multi:true,  field:"risk"},
+  cancer:    {key:"cancer_type",   multi:false, field:"cancer"},
+  relevance: {key:"relevance",     multi:false, field:"relevance"},
+  relation:  {key:"relation",      multi:false, field:"relation"},
+};
+
+const VIEWS = ["personal_story","risk_opinion","advice_info","ontopic","all"];
+const F = {risk:new Set(), group:new Set(), level:"group", riskMode:"AND", cancer:null, relation:null,
+           view:"personal_story",           // the page opens on the real cases
+           q:"", minconf:0, exnm:true};
+let PAGE = 50;
+
+const T = {
+ en:{banner:`<b>These are beliefs, not causes.</b> Every number on this page counts what people <i>wrote</i> under one Facebook post about cancer — not what medical evidence shows. Some of the most-cited items here (reheated food, incense smoke) are not established causes of cancer; some established ones barely appear. For what the evidence actually says, see <a href="https://www.who.int/news-room/fact-sheets/detail/cancer" target="_blank" rel="noopener">WHO</a> and <a href="https://monographs.iarc.who.int/list-of-classifications" target="_blank" rel="noopener">IARC</a>. Labels were assigned by a language model and are <b>not human-verified</b>.`,
+   risk:"Most cited risk behaviour", cloud:"In their own words", verb:"What people actually wrote, per risk", verbAll:"all phrases in those comments", cmp:"What we blame in ourselves vs. in others",
+   relv:"What the comment is", reln:"Whose behaviour or case", reln2:"self vs. relatives",
+   cooc:"Risks named together", matrix:"Risk behaviour by", raw:"Raw results",
+   exoff:"Exclude off-topic & promo", exnm:"Exclude “none mentioned”",
+   lga:"Talking about themselves", lgb:"Talking about someone else",
+   cloudHint:"phrases the commenters used, sized by how often",
+   coocClick:"click a cell to filter both", reset:"Reset", dl:"Download CSV",
+   tiles:["comments in view","tell a real cancer story","distinct risks named","risks per comment (avg)","low-confidence or flagged"]},
+ th:{banner:`<b>นี่คือ “ความเชื่อ” ไม่ใช่ “สาเหตุ”</b> ตัวเลขทั้งหมดในหน้านี้นับจากสิ่งที่ผู้คน<i>เขียน</i>ไว้ใต้โพสต์เฟซบุ๊กหนึ่งโพสต์ ไม่ใช่หลักฐานทางการแพทย์ บางข้อที่ถูกพูดถึงมาก (อาหารอุ่นซ้ำ ควันธูป) ไม่ได้เป็นสาเหตุของมะเร็งที่ได้รับการยืนยัน ขณะที่สาเหตุที่มีหลักฐานชัดเจนกลับแทบไม่ถูกพูดถึง ดูข้อมูลที่มีหลักฐานรองรับได้ที่ <a href="https://www.who.int/news-room/fact-sheets/detail/cancer" target="_blank" rel="noopener">WHO</a> และ <a href="https://monographs.iarc.who.int/list-of-classifications" target="_blank" rel="noopener">IARC</a> การจัดหมวดหมู่ทำโดยโมเดลภาษา <b>ยังไม่ผ่านการตรวจสอบโดยมนุษย์</b>`,
+   risk:"พฤติกรรมเสี่ยงที่ถูกพูดถึงมากที่สุด", cloud:"คำที่คนใช้จริง", verb:"คำที่คนเขียนจริง แยกตามความเสี่ยง", verbAll:"แสดงทุกวลีในคอมเมนต์นั้น", cmp:"สิ่งที่เราโทษตัวเอง เทียบกับ สิ่งที่เราเห็นในคนอื่น",
+   relv:"ลักษณะของคอมเมนต์", reln:"เป็นเรื่องของใคร", reln2:"ตัวเอง เทียบกับ ญาติ",
+   cooc:"ความเสี่ยงที่ถูกพูดถึงคู่กัน", matrix:"พฤติกรรมเสี่ยง แยกตาม", raw:"ข้อมูลดิบ",
+   exoff:"ไม่รวมคอมเมนต์ที่ไม่เกี่ยวข้องและขายของ", exnm:"ไม่รวม “ไม่ระบุ”",
+   lga:"พูดถึงตัวเอง", lgb:"พูดถึงคนอื่น",
+   cloudHint:"คำที่ผู้คอมเมนต์ใช้ ขนาดตามความถี่",
+   coocClick:"คลิกช่องเพื่อกรองทั้งคู่", reset:"ล้างตัวกรอง", dl:"ดาวน์โหลด CSV",
+   tiles:["คอมเมนต์ที่แสดง","เล่าเคสจริง","ความเสี่ยงที่พบ","ความเสี่ยงต่อคอมเมนต์ (เฉลี่ย)","ความมั่นใจต่ำ/ต้องตรวจ"]},
+};
+const t = () => T[LANG];
+
+/* ---------- filtering ---------- */
+function pass(r, skip){
+  if (F.minconf && !(r.conf >= F.minconf)) return false;
+  if (skip!=="relevance"){
+    if (F.view==="all") { /* everything */ }
+    else if (F.view==="ontopic") { if (NOISE.has(r.relevance)) return false; }
+    else if (r.relevance !== F.view) return false;
+  }
+  if (F.q){
+    const hay = (r.comment+" "+r.note+" "+r.riskVerb+" "+r.id).toLowerCase();
+    if (!hay.includes(F.q)) return false;
+  }
+  if (skip!=="risk" && F.risk.size){
+    const has = [...F.risk].filter(b => r.risk.includes(b)).length;
+    if (F.riskMode==="AND" ? has !== F.risk.size : has === 0) return false;
+  }
+  if (skip!=="risk" && F.group.size){
+    const gs = new Set(r.risk.map(groupOf));
+    const has = [...F.group].filter(g => gs.has(g)).length;
+    if (F.riskMode==="AND" ? has !== F.group.size : has === 0) return false;
+  }
+  for (const d of ["cancer","relation"]){
+    if (d===skip || !F[d]) continue;
+    if (r[DIM[d].field] !== F[d]) return false;
+  }
+  return true;
+}
+const sel = skip => RECS.filter(r => pass(r, skip));
+const risksOf = r => new Set(r.risk.filter(b => b!=="none_mentioned"));
+
+function groupCounts(rs){
+  const m=new Map();
+  rs.forEach(r => {
+    const gs=new Set(r.risk.filter(b => !(F.exnm && b==="none_mentioned")).map(groupOf));
+    gs.forEach(g => m.set(g,(m.get(g)||0)+1));
+  });
+  return [...m].sort((a,b)=> b[1]-a[1] || GORDER.indexOf(a[0])-GORDER.indexOf(b[0]));
+}
+
+function counts(rs, dim){
+  const {multi, field} = DIM[dim], m = new Map();
+  rs.forEach(r => {
+    const vals = multi ? [...new Set(r[field])] : (r[field] ? [r[field]] : []);
+    vals.forEach(v => {
+      if (F.exnm && v==="none_mentioned") return;
+      if (dim==="cancer" && NO_CANCER.has(v)) return;
+      m.set(v,(m.get(v)||0)+1);
+    });
+  });
+  return [...m].sort((a,b)=>b[1]-a[1]);
+}
+
+/* ---------- bars ---------- */
+function drawBars(el, pairs, denom, dim){
+  const grouped = dim==="group";
+  const key = grouped ? null : DIM[dim].key, max = pairs.length ? pairs[0][1] : 1;
+  const isSel = id => grouped ? F.group.has(id) : dim==="risk" ? F.risk.has(id) : F[dim]===id;
+  const anySel = grouped ? F.group.size>0 : dim==="risk" ? F.risk.size>0 : !!F[dim];
+  el.innerHTML = pairs.length ? pairs.map(([id,n]) => {
+    const pct = denom ? 100*n/denom : 0;
+    const cls = anySel ? (isSel(id) ? "sel" : "dim") : "";
+    const full = grouped ? gFull(id) : fullOf(key,id);
+    const lab  = grouped ? gName(id)  : nameOf(key,id);
+    return `<button class="bar ${cls}" data-dim="${dim}" data-id="${esc(id)}"
+        title="${esc(full)}\n${n} · ${pct.toFixed(1)}% of ${denom}">
+      <span class="lab">${esc(lab)}</span>
+      <span class="track"><span class="fill" style="width:${(100*n/max).toFixed(1)}%"></span></span>
+      <span class="val">${n} · ${pct.toFixed(0)}%</span>
+    </button>`;
+  }).join("") : `<div class="empty">—</div>`;
+}
+
+/* ---------- word cloud, built from the phrases the judge lifted verbatim ---------- */
+const STOP = new Set(["และ","หรือ","ที่","การ","ของ","ให้","เป็น","ก็","ไม่","มี","ได้","ค่ะ","คะ","ครับ","นะ",
+  "แต่","กับ","ใน","จะ","มา","ไป","อยู่","แล้ว","ด้วย","ๆ","เลย","มาก","จาก","เรา","ผม","ฉัน","ทุก","อย่าง",
+  "ทำ","คน","ตัว","เอง","พวก","ถ้า","เพราะ","จน","ต้อง","ควร","อาจ","บ้าง","หน่อย","กัน","ว่า","คือ","ๆๆ"]);
+function cloudTerms(rs){
+  const m = new Map();
+  rs.forEach(r => (r.riskVerb||"").split("|").forEach(chunk => {
+    chunk.split(/[\s,、]+/).forEach(w => {
+      const t = w.replace(/^[^฀-๿a-zA-Z0-9]+|[^฀-๿a-zA-Z0-9]+$/g,"");
+      if (t.length < 2 || STOP.has(t)) return;
+      m.set(t,(m.get(t)||0)+1);
+    });
+  }));
+  const all=[...m].sort((a,b)=>b[1]-a[1]);
+  const rep=all.filter(d=>d[1]>1);          // prefer repeated phrases; fall back on small samples
+  return (rep.length>=12 ? rep : all).slice(0,70);
+}
+function drawCloud(rs){
+  const svg = document.getElementById("cloud");
+  const terms = cloudTerms(rs);
+  document.getElementById("cloudHint").textContent = t().cloudHint;
+  const note = document.getElementById("cloudNote");
+  if (F.q){
+    note.innerHTML = (LANG==="th"
+      ? `<b>${esc(F.q)}</b> · ${rs.length} คอมเมนต์ · คำด้านล่างคือคำที่พูดถึงร่วมกัน`
+      : `<b>${esc(F.q)}</b> · ${rs.length} comments · words below co-appear with it`)
+      + ` <button id="cloudReset">${LANG==="th"?"ล้างคำนี้":"Clear word"}</button>`;
+  } else {
+    note.textContent = LANG==="th"
+      ? "คลิกคำใดก็ได้เพื่อกรองทั้งหน้าด้วยคำนั้น แล้วก้อนคำจะเปลี่ยนเป็นคำที่ถูกพูดถึงร่วมกัน"
+      : "Click any word to filter the whole page by it — the cloud then redraws to show the words it co-appears with.";
+  }
+  if (!terms.length){ svg.innerHTML = `<text x="50%" y="50%" text-anchor="middle" fill="var(--muted)" font-size="13">—</text>`; return; }
+  const W = svg.clientWidth || 520, H = 320;
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  const max = terms[0][1], min = terms[terms.length-1][1];
+  const size = n => 12 + 26*Math.sqrt((n-min)/Math.max(max-min,1));
+  const placed = [], out = [];
+  const hits = (a) => placed.some(b => !(a.x2<b.x1||a.x1>b.x2||a.y2<b.y1||a.y1>b.y2));
+  terms.forEach(([w,n],i) => {
+    const fs = size(n), wd = w.length*fs*0.62, ht = fs*1.15;
+    for (let s=0; s<2600; s++){
+      const ang = 0.32*s, rad = 3.2*ang;
+      const x = W/2 + rad*Math.cos(ang) - wd/2, y = H/2 + rad*Math.sin(ang)*0.62;
+      if (x<2 || y<ht || x+wd>W-2 || y>H-4) continue;
+      const box = {x1:x-3,y1:y-ht,x2:x+wd+3,y2:y+3};
+      if (hits(box)) continue;
+      placed.push(box);
+      const op = 0.45 + 0.55*(n-min)/Math.max(max-min,1);
+      out.push(`<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${fs.toFixed(1)}"
+        fill="var(--ink)" fill-opacity="${op.toFixed(2)}" data-term="${esc(w)}"
+        ><title>${esc(w)} — ${n}</title>${esc(w)}</text>`);
+      break;
+    }
+  });
+  svg.innerHTML = out.join("");
+}
+
+/* ---------- lived experience vs speculation ---------- */
+function drawCompare(){
+  const base = RECS.filter(r => !(F.minconf && !(r.conf>=F.minconf)));
+  const A = base.filter(r => r.relation==="self");
+  const B = base.filter(r => r.relation==="family" || r.relation==="friend");
+  document.getElementById("cmpN").textContent = `n=${A.length} vs n=${B.length}`;
+  document.getElementById("lg_note").textContent = LANG==="th"
+    ? "เรียงตามความต่าง — สิ่งที่มองไม่เห็นจากภายนอก (ความเครียด การนอน) ถูกพูดถึงมากเมื่อพูดถึงตัวเอง"
+    : "sorted by gap — states only you can feel (stress, sleep) dominate when people describe themselves";
+  const cnt = rs => { const m=new Map(); rs.forEach(r=>risksOf(r).forEach(b=>m.set(b,(m.get(b)||0)+1))); return m; };
+  const ca=cnt(A), cb=cnt(B);
+  const ids=[...new Set([...ca.keys(),...cb.keys()])];
+  const rows = ids.map(id => {
+    const pa = A.length ? 100*(ca.get(id)||0)/A.length : 0;
+    const pb = B.length ? 100*(cb.get(id)||0)/B.length : 0;
+    return {id, pa, pb, gap: Math.abs(pa-pb), n:(ca.get(id)||0)+(cb.get(id)||0)};
+  }).filter(d=>d.n>=2).sort((x,y)=>y.gap-x.gap).slice(0,12);
+  const mx = Math.max(10, ...rows.map(d=>Math.max(d.pa,d.pb)));
+  document.getElementById("cmp").innerHTML = rows.length ? rows.map(d => `
+    <div class="cmp" title="${esc(fullOf('risk_behavior',d.id))}">
+      <span class="lab">${esc(nameOf("risk_behavior",d.id))}</span>
+      <span class="side l"><span class="n">${d.pa.toFixed(0)}%</span><span class="b s1" style="width:${(100*d.pa/mx).toFixed(1)}%"></span></span>
+      <span class="side"><span class="b s2" style="width:${(100*d.pb/mx).toFixed(1)}%"></span><span class="n">${d.pb.toFixed(0)}%</span></span>
+    </div>`).join("") : `<div class="empty">—</div>`;
+}
+
+/* ---------- heatmaps ---------- */
+const BINS_PCT = [0,1,10,25,40,60];
+function binOf(v, mode, maxCount){
+  if (!v) return 0;
+  if (mode==="pct"){ let b=1; for(let i=1;i<BINS_PCT.length;i++) if(v>=BINS_PCT[i]) b=i+1; return b; }
+  const f = v/(maxCount||1);
+  return f<=0 ? 0 : Math.min(6, 1+Math.floor(f*5.999));
+}
+const globalBase = () => RECS.filter(r => {
+  if (F.minconf && !(r.conf >= F.minconf)) return false;
+  if (F.view==="all") { /* keep */ }
+  else if (F.view==="ontopic") { if (NOISE.has(r.relevance)) return false; }
+  else if (r.relevance !== F.view) return false;
+  if (F.q){ const h=(r.comment+" "+r.note+" "+r.riskVerb).toLowerCase(); if(!h.includes(F.q)) return false; }
+  return true;
+});
+
+function drawCooc(){
+  const base = globalBase();
+  const top = counts(base,"risk").filter(d=>d[0]!=="none_mentioned").slice(0,14).map(d=>d[0]);
+  const tbl = document.getElementById("cooc");
+  if (top.length<2){ tbl.innerHTML=`<tr><td class="empty">—</td></tr>`; document.getElementById("coocScale").innerHTML=""; return; }
+  const pair = {}, solo = {};
+  base.forEach(r => { const s=[...risksOf(r)];
+    s.forEach(a => solo[a]=(solo[a]||0)+1);
+    for(let i=0;i<s.length;i++) for(let j=i+1;j<s.length;j++){
+      const k=[s[i],s[j]].sort().join("|"); pair[k]=(pair[k]||0)+1; } });
+  const maxP = Math.max(1, ...Object.values(pair));
+  const head = `<thead><tr><th></th>${top.map(b=>`<th><div>${esc(nameOf("risk_behavior",b))}</div></th>`).join("")}</tr></thead>`;
+  const body = "<tbody>"+top.map((a,ri)=>{
+    const cells = top.map((b,ci)=>{
+      if (ci>=ri) return `<td><button class="cell na" disabled></button></td>`;
+      const n = pair[[a,b].sort().join("|")]||0;
+      const isSel = F.risk.has(a) && F.risk.has(b) && F.risk.size===2;
+      return `<td><button class="cell b${binOf(n,'count',maxP)}${isSel?' sel':''}" data-pa="${esc(a)}" data-pb="${esc(b)}"
+        title="${esc(nameOf('risk_behavior',a))} + ${esc(nameOf('risk_behavior',b))}\n${n} comments name both">${n||""}</button></td>`;
+    }).join("");
+    return `<tr><th>${esc(nameOf("risk_behavior",a))} <span>${solo[a]||0}</span></th>${cells}</tr>`;
+  }).join("")+"</tbody>";
+  tbl.innerHTML = head+body;
+  document.getElementById("coocScale").innerHTML =
+    `<span>${LANG==="th"?"จำนวนคอมเมนต์ที่พูดถึงทั้งคู่":"comments naming both"}</span>` +
+    [0,1,2,3,4,5,6].map(b=>`<i style="background:var(--h${b});${b===0?"box-shadow:inset 0 0 0 1px var(--grid)":""}"></i>`).join("") +
+    `<span>low → high</span><span style="margin-left:8px">${t().coocClick}</span>`;
+}
+
+function drawHeat(){
+  const rowDim=document.getElementById("rowDim").value, mode=document.getElementById("hmMode").value;
+  const minN=+document.getElementById("minN").value;
+  const rowKey=DIM[rowDim].key, rowField=DIM[rowDim].field, base=globalBase();
+  const rowVals = counts(base,rowDim).filter(([,n])=>n>=minN).map(d=>d[0]);
+  const cols = counts(base,"risk").map(d=>d[0]);
+  const tbl=document.getElementById("hm");
+  if(!rowVals.length||!cols.length){ tbl.innerHTML=`<tr><td class="empty">—</td></tr>`;
+    document.getElementById("scale").innerHTML=""; return; }
+  const denom={}; rowVals.forEach(v=>denom[v]=base.filter(r=>r[rowField]===v).length);
+  const cnt={};
+  base.forEach(r=>{ if(denom[r[rowField]]===undefined) return;
+    new Set(r.risk).forEach(b=>{ const k=r[rowField]+" "+b; cnt[k]=(cnt[k]||0)+1; }); });
+  const maxCount=Math.max(1,...Object.values(cnt));
+  const head=`<thead><tr><th></th>${cols.map(b=>`<th><div>${esc(nameOf("risk_behavior",b))}</div></th>`).join("")}</tr></thead>`;
+  const body="<tbody>"+rowVals.map(v=>{
+    const cells=cols.map(b=>{
+      const n=cnt[v+" "+b]||0, val=mode==="pct"?(denom[v]?100*n/denom[v]:0):n;
+      const isSel=F[rowDim]===v&&F.risk.has(b);
+      return `<td><button class="cell b${binOf(val,mode,maxCount)}${isSel?" sel":""}" data-rd="${rowDim}" data-rv="${esc(v)}" data-b="${esc(b)}"
+        title="${esc(fullOf(rowKey,v))} × ${esc(fullOf('risk_behavior',b))}\n${n} of ${denom[v]} (${denom[v]?(100*n/denom[v]).toFixed(0):0}%)">${n===0?"":(mode==="pct"?Math.round(val):n)}</button></td>`;
+    }).join("");
+    return `<tr><th>${esc(nameOf(rowKey,v))} <span>n=${denom[v]}</span></th>${cells}</tr>`;
+  }).join("")+"</tbody>";
+  tbl.innerHTML=head+body;
+  document.getElementById("scale").innerHTML =
+    `<span>${mode==="pct"?(LANG==="th"?"สัดส่วนของแถวนั้น":"share of that row"):(LANG==="th"?"จำนวนคอมเมนต์":"comment count")}</span>`+
+    [0,1,2,3,4,5,6].map(b=>`<i style="background:var(--h${b});${b===0?"box-shadow:inset 0 0 0 1px var(--grid)":""}"></i>`).join("")+
+    `<span>low → high</span>`;
+}
+
+/* ---------- table, tiles, chips ---------- */
+let VERB_SEL = null;
+function drawVerbatim(){
+  const rs = sel("risk");
+  const pairs = counts(rs, "risk");
+  if (!pairs.length){ document.getElementById("verbRisks").innerHTML=`<div class="empty">—</div>`;
+    document.getElementById("verbQuotes").innerHTML=""; return; }
+  if (!VERB_SEL || !pairs.some(d=>d[0]===VERB_SEL)) VERB_SEL = pairs[0][0];
+
+  document.getElementById("verbRisks").innerHTML = pairs.map(([id,n]) =>
+    `<button class="vitem ${id===VERB_SEL?"on":""}" data-verb="${esc(id)}"
+       title="${esc(fullOf("risk_behavior",id))}"><span>${esc(nameOf("risk_behavior",id))}</span><span class="c">${n}</span></button>`).join("");
+
+  // comments carrying the selected risk
+  const rows = rs.filter(r => r.risk.includes(VERB_SEL));
+  const showAll = document.getElementById("verbAll").checked;
+  // short stems that attribute a phrase to this label (labels.json -> "match")
+  const ent  = lk("risk_behavior", VERB_SEL) || {};
+  const stems = (ent.match && ent.match.length ? ent.match
+                 : (ent.th || "").split(/\s+/)).filter(w => w && w.length >= 2);
+  const seen = new Map();
+  let credited = 0, silent = 0;
+  rows.forEach(r => {
+    const chunks = (r.riskVerb || "").split("|").map(c => c.trim()).filter(Boolean);
+    const keep = showAll ? chunks
+               : chunks.filter(c => stems.some(h => c.toLowerCase().includes(h.toLowerCase())));
+    if (keep.length) credited++; else silent++;
+    keep.forEach(c => {
+      const k = c.toLowerCase();
+      if (!seen.has(k)) seen.set(k, {text:c, n:0, ids:[]});
+      const e = seen.get(k); e.n++; if (e.ids.length < 4) e.ids.push(r.id);
+    });
+  });
+  const list = [...seen.values()].sort((a,b)=> b.n-a.n || a.text.localeCompare(b.text));
+  const occ = list.reduce((s,e)=>s+e.n, 0);
+  const tail = silent && !showAll
+    ? (LANG==="th"
+        ? ` · อีก <b>${silent}</b> คอมเมนต์ใช้คำอื่น — ติ๊ก “แสดงทุกวลี” เพื่อดู`
+        : ` · <b>${silent}</b> more used different wording — tick “all phrases” to see them`)
+    : "";
+  const head = LANG==="th"
+    ? `<div class="vhead"><b>${esc(nameOf("risk_behavior",VERB_SEL))}</b> · ${rows.length} คอมเมนต์มีป้ายนี้ · ${credited} คอมเมนต์เขียนวลีที่ตรงกัน (${occ} ครั้ง, ${list.length} วลีไม่ซ้ำ)${tail}</div>`
+    : `<div class="vhead"><b>${esc(nameOf("risk_behavior",VERB_SEL))}</b> · ${rows.length} comments carry this label · ${credited} wrote a matching phrase (${occ} occurrences, ${list.length} distinct)${tail}</div>`;
+  document.getElementById("verbQuotes").innerHTML = head + (list.length
+    ? list.slice(0,300).map(e =>
+        `<div class="vq"><span class="id">${esc(e.ids[0])}</span>${esc(e.text)}${e.n>1?`<span class="n">×${e.n}</span>`:""}</div>`).join("")
+    : `<div class="empty">—</div>`);
+}
+
+function drawTable(){
+  const rs=sel(null);
+  document.getElementById("tblN").textContent = `${rs.length}`;
+  const t2=document.getElementById("raw");
+  if(!rs.length){ t2.innerHTML=`<tr><td class="empty">—</td></tr>`; document.getElementById("more").innerHTML=""; return; }
+  t2.innerHTML=`<thead><tr><th>#</th><th>${LANG==="th"?"คอมเมนต์":"Comment"}</th><th>${LANG==="th"?"ความเสี่ยง":"Risks"}</th>
+    <th>${LANG==="th"?"ของใคร":"Whose"}</th><th>${LANG==="th"?"ชนิด":"Kind"}</th><th class="num">Conf</th></tr></thead><tbody>`+
+    rs.slice(0,PAGE).map((r,i)=>{
+      const low=r.conf!=null&&r.conf<0.6, fl=r.flags.includes("needs_human_review");
+      const body = r.comment ? esc(r.comment)
+        : `<i style="color:var(--muted)">${LANG==="th"?`ข้อความยาว ${r.chars} ตัวอักษร — ไม่เผยแพร่`:`${r.chars}-char comment withheld`}</i>`;
+      return `<tr class="r" data-i="${i}">
+        <td class="num">${esc(r.id)}</td>
+        <td class="txt"><div class="trunc">${body}</div></td>
+        <td>${r.risk.map(b=>`<span class="tag">${esc(nameOf("risk_behavior",b))}</span>`).join("")||"—"}</td>
+        <td>${esc(nameOf("relation",r.relation))}</td>
+        <td>${esc(nameOf("relevance",r.relevance))}</td>
+        <td class="num ${low||fl?"lowconf":""}">${r.conf==null?"—":r.conf.toFixed(2)}</td></tr>
+      <tr class="detail" hidden><td colspan="6"><dl class="dl">
+        <dt>${LANG==="th"?"คอมเมนต์":"Comment"}</dt><dd>${body}</dd>
+        <dt>${LANG==="th"?"สรุปโดยผู้ตรวจ":"Judge note"}</dt><dd>${esc(r.note)||"—"}</dd>
+        <dt>${LANG==="th"?"คำที่ใช้":"Verbatim"}</dt><dd>${esc(r.riskVerb)||"—"}</dd>
+        <dt>${LANG==="th"?"ความเสี่ยง":"Risks"}</dt><dd>${r.risk.map(b=>`<span class="tag">${esc(nameOf("risk_behavior",b))}</span>`).join(" ")||"—"}</dd>
+        <dt>${LANG==="th"?"มะเร็ง":"Cancer"}</dt><dd>${NO_CANCER.has(r.cancer)?"—":esc(fullOf("cancer_type",r.cancer))}</dd>
+        <dt>${LANG==="th"?"การรักษา":"Care"}</dt><dd>${r.health.filter(h=>h!=="none_mentioned").map(h=>`<span class="tag">${esc(nameOf("behavior",h))}</span>`).join(" ")||"—"}</dd>
+        <dt>Flags</dt><dd>${r.flags.map(f=>`<span class="tag warn">${esc(f)}</span>`).join(" ")||"—"}</dd>
+      </dl></td></tr>`;
+    }).join("")+"</tbody>";
+  document.getElementById("more").innerHTML = rs.length>PAGE
+    ? `<button id="moreBtn">+50 (${rs.length-PAGE})</button>` : "";
+}
+
+function drawTiles(){
+  const rs=sel(null);
+  const stories=rs.filter(r=>r.relevance==="personal_story").length;
+  const kinds=new Set(rs.flatMap(r=>[...risksOf(r)])).size;
+  const wr=rs.filter(r=>risksOf(r).size);
+  const avg=wr.length?wr.reduce((s,r)=>s+risksOf(r).size,0)/wr.length:0;
+  const review=rs.filter(r=>(r.conf!=null&&r.conf<0.6)||r.flags.includes("needs_human_review")).length;
+  const k=t().tiles;
+  document.getElementById("tiles").innerHTML=[
+    [rs.length,`${k[0]}${rs.length!==RECS.length?` (${RECS.length})`:""}`],
+    [stories,k[1]],[kinds,k[2]],[avg.toFixed(1),k[3]],[review,k[4]],
+  ].map(([v,x])=>`<div class="tile"><div class="v">${v}</div><div class="k">${x}</div></div>`).join("");
+}
+
+function drawViewbar(){
+  const base = RECS.filter(r => !(F.minconf && !(r.conf >= F.minconf)));
+  const n = v => v==="all" ? base.length
+            : v==="ontopic" ? base.filter(r=>!NOISE.has(r.relevance)).length
+            : base.filter(r=>r.relevance===v).length;
+  const lab = {
+    en:{personal_story:"Real cases", risk_opinion:"Opinions on risk", advice_info:"Advice & info",
+        ontopic:"All on-topic", all:"Everything"},
+    th:{personal_story:"เคสจริง", risk_opinion:"ความเห็นเรื่องเสี่ยง", advice_info:"ให้ความรู้",
+        ontopic:"ทั้งหมดที่เกี่ยวข้อง", all:"ทุกคอมเมนต์"}}[LANG];
+  document.getElementById("viewbar").innerHTML = VIEWS.map(v =>
+    `<button data-view="${v}" class="${F.view===v?"on":""}">${lab[v]}<small>${n(v)}</small></button>`).join("");
+  const note = {
+    en:{personal_story:`Showing only comments that describe a real cancer case — someone the commenter knows or is. Every number below is out of these ${n("personal_story")}.`,
+        risk_opinion:`Showing only comments answering what raises risk, with no specific case. ${n("risk_opinion")} comments.`,
+        advice_info:`Showing only general advice, health information and quoted articles. ${n("advice_info")} comments.`,
+        ontopic:`Showing everything about cancer or its risks — off-topic chatter and sales posts excluded. ${n("ontopic")} comments.`,
+        all:`Showing all ${n("all")} comments, including off-topic chatter and sales posts.`},
+    th:{personal_story:`แสดงเฉพาะคอมเมนต์ที่เล่าเคสมะเร็งจริง — ตัวผู้เขียนเองหรือคนที่รู้จัก ตัวเลขทั้งหมดด้านล่างคิดจาก ${n("personal_story")} คอมเมนต์นี้`,
+        risk_opinion:`แสดงเฉพาะคอมเมนต์ที่ตอบว่าอะไรเสี่ยง โดยไม่ได้เล่าเคสจริง ${n("risk_opinion")} คอมเมนต์`,
+        advice_info:`แสดงเฉพาะคำแนะนำ ข้อมูลสุขภาพ และบทความที่อ้างถึง ${n("advice_info")} คอมเมนต์`,
+        ontopic:`แสดงทุกคอมเมนต์ที่เกี่ยวกับมะเร็ง ไม่รวมคอมเมนต์ที่ไม่เกี่ยวข้องและโพสต์ขายของ ${n("ontopic")} คอมเมนต์`,
+        all:`แสดงทั้งหมด ${n("all")} คอมเมนต์ รวมคอมเมนต์ที่ไม่เกี่ยวข้องและขายของ`}}[LANG];
+  document.getElementById("viewnote").textContent = note[F.view];
+}
+
+function drawChips(){
+  const c=[];
+  [...F.group].forEach(id=>c.push(["group:"+id,LANG==="th"?"หมวด":"Category",gName(id)]));
+  [...F.risk].forEach(id=>c.push(["risk:"+id,"Risk",nameOf("risk_behavior",id)]));
+  if(F.cancer)    c.push(["cancer","Cancer",nameOf("cancer_type",F.cancer)]);
+  if(F.relation)  c.push(["relation",LANG==="th"?"ของใคร":"Whose",nameOf("relation",F.relation)]);
+  const toggle = (F.risk.size+F.group.size)>1
+    ? `<span class="andor"><button data-mode="AND" class="${F.riskMode==="AND"?"on":""}">AND</button><button data-mode="OR" class="${F.riskMode==="OR"?"on":""}">OR</button></span>` : "";
+  document.getElementById("chips").innerHTML = c.length
+    ? toggle + c.map(([d,k,v])=>`<span class="chip">${k}: <b>${esc(v)}</b><button data-clear="${d}">×</button></span>`).join("")
+    : `<span class="hint">${LANG==="th"?"คลิกแท่งกราฟหรือช่องตารางเพื่อกรอง เลือกได้หลายอัน":"Click bars or cells to filter — pick several to combine"}</span>`;
+}
+
+function applyLang(){
+  const x=t();
+  document.getElementById("banner").innerHTML=x.banner;
+  document.getElementById("h_risk").textContent=x.risk;
+  document.getElementById("h_cloud").textContent=x.cloud;
+  document.getElementById("h_cmp").textContent=x.cmp;
+  document.getElementById("h_cooc").textContent=x.cooc;
+  document.getElementById("h_matrix").textContent=x.matrix;
+  document.getElementById("h_verb").textContent=x.verb;
+  document.getElementById("lblVerbAll").textContent=x.verbAll;
+  document.getElementById("h_raw").textContent=x.raw;
+  document.getElementById("lblExnm").textContent=x.exnm;
+  document.getElementById("lg_a").textContent=x.lga;
+  document.getElementById("lg_b").textContent=x.lgb;
+  document.getElementById("reset").textContent=x.reset;
+  document.getElementById("dl").textContent=x.dl;
+  document.getElementById("lang").textContent = LANG==="th" ? "EN" : "ไทย";
+  document.documentElement.lang = LANG;
+}
+
+function render(){
+  const rk=sel("risk");
+  if (F.level==="group") drawBars(document.getElementById("riskBars"), groupCounts(rk), rk.length, "group");
+  else                   drawBars(document.getElementById("riskBars"), counts(rk,"risk"), rk.length, "risk");
+  document.getElementById("lvGroup").className = F.level==="group" ? "on" : "";
+  document.getElementById("lvRisk").className  = F.level==="risk"  ? "on" : "";
+  document.getElementById("riskN").textContent = `${LANG==="th"?"เลือกได้หลายข้อ":"multi-label"} · ${rk.length}`;
+  drawCloud(globalBase()); drawCompare(); drawCooc(); drawHeat();
+  drawViewbar(); drawTiles(); drawChips(); drawVerbatim(); drawTable();
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", e => {
+  const bar=e.target.closest(".bar");
+  if(bar){ const d=bar.dataset.dim, id=bar.dataset.id;
+    if(d==="group"){ F.group.has(id)?F.group.delete(id):F.group.add(id); }
+    else if(d==="risk"){ F.risk.has(id)?F.risk.delete(id):F.risk.add(id); }
+    else if(d==="relevance"){ F.view = (F.view===id ? "ontopic" : id); }
+    else F[d] = (F[d]===id?null:id);
+    PAGE=50; render(); return; }
+  const cell=e.target.closest(".cell:not(.na)");
+  if(cell){
+    if(cell.dataset.pa){ const a=cell.dataset.pa,b=cell.dataset.pb;
+      if(F.risk.has(a)&&F.risk.has(b)&&F.risk.size===2){ F.risk.clear(); }
+      else { F.risk=new Set([a,b]); F.riskMode="AND"; } }
+    else { const rd=cell.dataset.rd, rv=cell.dataset.rv, b=cell.dataset.b;
+      if(F[rd]===rv&&F.risk.has(b)&&F.risk.size===1){ F[rd]=null; F.risk.clear(); }
+      else { F[rd]=rv; F.risk=new Set([b]); } }
+    PAGE=50; render();
+    document.getElementById("raw").scrollIntoView({behavior:"smooth",block:"start"}); return; }
+  const term=e.target.closest("#cloud text");
+  if(term){ document.getElementById("q").value=term.dataset.term;
+    F.q=term.dataset.term.toLowerCase(); PAGE=50; render(); return; }
+  const vb=e.target.closest("[data-verb]");
+  if(vb){ VERB_SEL=vb.dataset.verb; drawVerbatim(); return; }
+  const lv=e.target.closest("[data-level]");
+  if(lv){ F.level=lv.dataset.level; PAGE=50; render(); return; }
+  const vw=e.target.closest("[data-view]");
+  if(vw){ F.view=vw.dataset.view; PAGE=50; render(); return; }
+  if(e.target.id==="cloudReset"){ F.q=""; document.getElementById("q").value=""; PAGE=50; render(); return; }
+  const md=e.target.closest("[data-mode]");
+  if(md){ F.riskMode=md.dataset.mode; PAGE=50; render(); return; }
+  const clr=e.target.closest("[data-clear]");
+  if(clr){ const v=clr.dataset.clear;
+    if(v.startsWith("risk:")) F.risk.delete(v.slice(5));
+    else if(v.startsWith("group:")) F.group.delete(v.slice(6));
+    else F[v]=null;
+    PAGE=50; render(); return; }
+  const row=e.target.closest("tr.r");
+  if(row){ const d=row.nextElementSibling; if(d&&d.classList.contains("detail")) d.hidden=!d.hidden; return; }
+  if(e.target.id==="moreBtn"){ PAGE+=50; drawTable(); return; }
+});
+document.getElementById("q").addEventListener("input", e=>{ F.q=e.target.value.trim().toLowerCase(); PAGE=50; render(); });
+document.getElementById("minconf").addEventListener("change", e=>{ F.minconf=+e.target.value; render(); });
+document.getElementById("exnm").addEventListener("change", e=>{ F.exnm=e.target.checked; render(); });
+document.getElementById("verbAll").addEventListener("change", drawVerbatim);
+document.getElementById("rowDim").addEventListener("change", drawHeat);
+document.getElementById("hmMode").addEventListener("change", drawHeat);
+document.getElementById("minN").addEventListener("change", drawHeat);
+document.getElementById("reset").addEventListener("click", ()=>{
+  F.risk.clear(); F.group.clear(); F.cancer=F.relation=null; F.view="personal_story"; F.q=""; F.minconf=0; F.riskMode="AND";
+  document.getElementById("q").value=""; document.getElementById("minconf").value="0";
+  PAGE=50; render(); });
+document.getElementById("lang").addEventListener("click", ()=>{ LANG = LANG==="th"?"en":"th"; applyLang(); render(); });
+document.getElementById("theme").addEventListener("click", ()=>{
+  const cur=document.documentElement.getAttribute("data-theme");
+  const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme",dark?"light":"dark"); render(); });
+document.getElementById("dl").addEventListener("click", ()=>{
+  const rs=sel(null);
+  const cols=["id","comment","relevance","risk","primary","riskVerb","relation","cancer","health","outcome","note","conf","flags"];
+  const q=v=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+  const csv="﻿"+[cols.join(",")].concat(rs.map(r=>cols.map(c=>q(Array.isArray(r[c])?r[c].join("|"):r[c])).join(","))).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+  a.download="filtered_comments.csv"; a.click(); URL.revokeObjectURL(a.href); });
+addEventListener("resize", () => drawCloud(globalBase()));
+
+/* ---------- boot ---------- */
+document.title = DATA.meta.title;
+document.getElementById("title").textContent = DATA.meta.title;
+document.getElementById("meta").textContent =
+  `${DATA.meta.analysed} comments · ${DATA.meta.source||""} · ${DATA.meta.generated}`
+  + (DATA.meta.withheld ? ` · ${DATA.meta.withheld} long comments withheld` : "");
+document.getElementById("foot").innerHTML =
+  `Multi-label: one comment can name several risks, so percentages are shares of <i>comments</i> and do not sum to 100%.
+   A percentage over a small <b>n</b> is not comparable to one over a large n — every row shows its n.
+   Names, profile links and @-mentions were removed before publication; comment ids are surrogates and do not link back to Facebook.
+   Method, prompt and label definitions are in the repository.`;
+applyLang(); render();
+</script>
+</body>
+</html>
