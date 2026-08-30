@@ -146,6 +146,24 @@ table.hm td{padding:0}
 #cloud text{cursor:pointer;font-family:inherit}
 #cloud text:hover{fill:var(--series)!important;text-decoration:underline}
 
+/* IARC evidence bands */
+.band{margin-bottom:16px}
+.band-h{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;font-size:12px}
+.band-h b{font-weight:600}
+.band-h .dot{width:10px;height:10px;border-radius:2px;display:inline-block}
+.band-h .sub{color:var(--muted);font-size:11px}
+.e1{background:#184f95} .e2{background:#5598e7} .e3{background:#cde2fb}
+:root[data-theme="dark"] .e3, .cell-dark{}
+.bar .fill.e1{background:#184f95} .bar .fill.e2{background:#5598e7} .bar .fill.e3{background:#9ec5f4}
+/* histogram */
+.hist{display:flex;align-items:flex-end;gap:5px;padding-top:8px}
+.hcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;min-width:0}
+.hcol .hb{width:100%;background:var(--series);border-radius:4px 4px 0 0;min-height:3px;transition:height .18s}
+.hcol .hn{font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.hcol .hx{font-size:11px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.srcnote{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.6}
+.srcnote a{color:var(--ink-2)}
+
 /* verbatim browser */
 .vgrid{display:grid;grid-template-columns:230px 1fr;gap:14px}
 @media(max-width:760px){.vgrid{grid-template-columns:1fr}}
@@ -249,6 +267,32 @@ footer a{color:var(--ink-2)}
 
 <section class="card">
   <div class="card-head">
+    <h2 id="h_ev">Belief vs. evidence</h2>
+    <span class="hint" id="evHint"></span>
+  </div>
+  <div id="evBands"></div>
+  <p class="srcnote" id="evSrc"></p>
+</section>
+
+<div class="grid2">
+  <section class="card">
+    <div class="card-head"><h2 id="h_real">Cancers named vs. actual Thai cases</h2><span class="hint" id="realN"></span></div>
+    <div class="legend">
+      <span><i style="background:var(--series)"></i><span id="lg_c">Named in comments</span></span>
+      <span><i style="background:var(--series-2)"></i><span id="lg_r">Actual new cases, Thailand</span></span>
+    </div>
+    <div id="realCmp"></div>
+    <p class="srcnote" id="realSrc"></p>
+  </section>
+  <section class="card">
+    <div class="card-head"><h2 id="h_hist">How many risks per comment</h2><span class="hint" id="histN"></span></div>
+    <div class="hist" id="hist"></div>
+    <p class="srcnote" id="histNote"></p>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head">
     <h2 id="h_cooc">Risks named together</h2>
     <span class="hint" id="coocHint">click a cell to filter both</span>
   </div>
@@ -339,6 +383,7 @@ let PAGE = 50;
 
 const T = {
  en:{banner:`<b>These are beliefs, not causes.</b> Every number on this page counts what people <i>wrote</i> under one Facebook post about cancer — not what medical evidence shows. Some of the most-cited items here (reheated food, incense smoke) are not established causes of cancer; some established ones barely appear. For what the evidence actually says, see <a href="https://www.who.int/news-room/fact-sheets/detail/cancer" target="_blank" rel="noopener">WHO</a> and <a href="https://monographs.iarc.who.int/list-of-classifications" target="_blank" rel="noopener">IARC</a>. Labels were assigned by a language model and are <b>not human-verified</b>.`,
+   ev:"Belief vs. evidence", real:"Cancers named vs. actual Thai cases", hist:"How many risks per comment",
    risk:"Most cited risk behaviour", cloud:"In their own words", verb:"What people actually wrote, per risk", verbAll:"all phrases in those comments", cmp:"What we blame in ourselves vs. in others",
    relv:"What the comment is", reln:"Whose behaviour or case", reln2:"self vs. relatives",
    cooc:"Risks named together", matrix:"Risk behaviour by", raw:"Raw results",
@@ -348,6 +393,7 @@ const T = {
    coocClick:"click a cell to filter both", reset:"Reset", dl:"Download CSV",
    tiles:["comments in view","tell a real cancer story","distinct risks named","risks per comment (avg)","low-confidence or flagged"]},
  th:{banner:`<b>นี่คือ “ความเชื่อ” ไม่ใช่ “สาเหตุ”</b> ตัวเลขทั้งหมดในหน้านี้นับจากสิ่งที่ผู้คน<i>เขียน</i>ไว้ใต้โพสต์เฟซบุ๊กหนึ่งโพสต์ ไม่ใช่หลักฐานทางการแพทย์ บางข้อที่ถูกพูดถึงมาก (อาหารอุ่นซ้ำ ควันธูป) ไม่ได้เป็นสาเหตุของมะเร็งที่ได้รับการยืนยัน ขณะที่สาเหตุที่มีหลักฐานชัดเจนกลับแทบไม่ถูกพูดถึง ดูข้อมูลที่มีหลักฐานรองรับได้ที่ <a href="https://www.who.int/news-room/fact-sheets/detail/cancer" target="_blank" rel="noopener">WHO</a> และ <a href="https://monographs.iarc.who.int/list-of-classifications" target="_blank" rel="noopener">IARC</a> การจัดหมวดหมู่ทำโดยโมเดลภาษา <b>ยังไม่ผ่านการตรวจสอบโดยมนุษย์</b>`,
+   ev:"ความเชื่อ เทียบกับ หลักฐาน", real:"มะเร็งที่คนเล่า เทียบกับ ผู้ป่วยจริงในไทย", hist:"คนหนึ่งคนตอบกี่ข้อ",
    risk:"พฤติกรรมเสี่ยงที่ถูกพูดถึงมากที่สุด", cloud:"คำที่คนใช้จริง", verb:"คำที่คนเขียนจริง แยกตามความเสี่ยง", verbAll:"แสดงทุกวลีในคอมเมนต์นั้น", cmp:"สิ่งที่เราโทษตัวเอง เทียบกับ สิ่งที่เราเห็นในคนอื่น",
    relv:"ลักษณะของคอมเมนต์", reln:"เป็นเรื่องของใคร", reln2:"ตัวเอง เทียบกับ ญาติ",
    cooc:"ความเสี่ยงที่ถูกพูดถึงคู่กัน", matrix:"พฤติกรรมเสี่ยง แยกตาม", raw:"ข้อมูลดิบ",
@@ -487,6 +533,90 @@ function drawCloud(rs){
     }
   });
   svg.innerHTML = out.join("");
+}
+
+
+/* ---------- 1. belief vs IARC evidence ---------- */
+const IARC = id => (lk("risk_behavior",id) || {}).iarc || "na";
+const IARC_NOTE = id => (lk("risk_behavior",id) || {}).iarc_note || "";
+function drawEvidence(){
+  const rs = sel("risk"), N = rs.length;
+  const c = new Map();
+  rs.forEach(r => new Set(r.risk).forEach(b => { if(b!=="none_mentioned") c.set(b,(c.get(b)||0)+1); }));
+  const BANDS = LANG==="th"
+    ? [["1","IARC กลุ่ม 1","มีหลักฐานชัดเจนในมนุษย์","e1"],
+       ["2A","IARC กลุ่ม 2A","น่าจะก่อมะเร็ง","e2"],
+       ["none","IARC ยังไม่ได้จัดกลุ่ม","ไม่ได้แปลว่าปลอดภัย แปลว่ายังไม่มีการประเมิน","e3"]]
+    : [["1","IARC Group 1","sufficient evidence in humans","e1"],
+       ["2A","IARC Group 2A","probably carcinogenic","e2"],
+       ["none","Not classified by IARC","not the same as safe — it means not assessed","e3"]];
+  const max = Math.max(1, ...c.values());
+  document.getElementById("evHint").textContent = LANG==="th"
+    ? `% ของ ${N} คอมเมนต์` : `% of ${N} comments`;
+  document.getElementById("evBands").innerHTML = BANDS.map(([g,title,sub,cls]) => {
+    const items=[...c].filter(([b])=>IARC(b)===g).sort((a,b)=>b[1]-a[1]);
+    if(!items.length) return "";
+    return `<div class="band"><div class="band-h"><span class="dot ${cls}"></span><b>${title}</b>
+      <span class="sub">${sub}</span></div><div class="bars">` +
+      items.map(([b,n])=>`<button class="bar" data-dim="risk" data-id="${esc(b)}"
+        title="${esc(IARC_NOTE(b)||fullOf('risk_behavior',b))}">
+        <span class="lab">${esc(nameOf("risk_behavior",b))}</span>
+        <span class="track"><span class="fill ${cls}" style="width:${(100*n/max).toFixed(1)}%"></span></span>
+        <span class="val">${n} · ${(100*n/N).toFixed(0)}%</span></button>`).join("") + `</div></div>`;
+  }).join("");
+  const m = DATA.iarc_meta || {};
+  document.getElementById("evSrc").innerHTML = (LANG==="th"
+    ? `ที่มา: ${esc(m.source||"")} · ${esc(m.handbooks||"")}<br><b>ข้อควรระวัง:</b> ${esc(m.caveat||"")} วางเมาส์บนแต่ละแถบเพื่อดูหมายเหตุ`
+    : `Source: ${esc(m.source||"")}<br><b>Caveat:</b> our labels come from what people wrote and do not map exactly onto IARC's own entries; this pairing is approximate. Hover a bar for the per-label note.`);
+}
+
+/* ---------- 2. cancers named vs actual Thai incidence ---------- */
+function drawReal(){
+  const rs = sel(null);
+  const named = new Map();
+  rs.forEach(r => { if(r.cancer && !NO_CANCER.has(r.cancer)) named.set(r.cancer,(named.get(r.cancer)||0)+1); });
+  const tot = [...named.values()].reduce((a,b)=>a+b,0);
+  const TH = (DATA.thai_incidence||{}).pct || {};
+  const ids = [...new Set([...named.keys(), ...Object.keys(TH)])]
+    .map(id => ({id, pc: tot?100*(named.get(id)||0)/tot:0, pr: TH[id]||0}))
+    .filter(d => d.pr>=2 || d.pc>=3)
+    .sort((a,b)=> (b.pr-b.pc)-(a.pr-a.pc));
+  const mx = Math.max(5, ...ids.map(d=>Math.max(d.pc,d.pr)));
+  document.getElementById("realN").textContent = LANG==="th" ? `n=${tot} เคสที่ระบุชนิด` : `n=${tot} cases naming a type`;
+  document.getElementById("lg_c").textContent = LANG==="th" ? "ที่คนเล่าในคอมเมนต์" : "Named in comments";
+  document.getElementById("lg_r").textContent = LANG==="th" ? "ผู้ป่วยรายใหม่จริงในไทย" : "Actual new cases, Thailand";
+  document.getElementById("realCmp").innerHTML = ids.length ? ids.map(d => `
+    <div class="cmp" title="${esc(fullOf('cancer_type',d.id))}">
+      <span class="lab">${esc(nameOf("cancer_type",d.id))}</span>
+      <span class="side l"><span class="n">${d.pc.toFixed(0)}%</span><span class="b s1" style="width:${(100*d.pc/mx).toFixed(1)}%"></span></span>
+      <span class="side"><span class="b s2" style="width:${(100*d.pr/mx).toFixed(1)}%"></span><span class="n">${d.pr.toFixed(0)}%</span></span>
+    </div>`).join("") : `<div class="empty">—</div>`;
+  const ti = DATA.thai_incidence || {};
+  document.getElementById("realSrc").innerHTML = LANG==="th"
+    ? `ที่มา: ${esc(ti.source||"")} · ${esc(ti.note||"")}<br>เรียงตามช่องว่าง — บนสุดคือชนิดที่พบจริงบ่อยแต่คนพูดถึงน้อย`
+    : `Source: ${esc(ti.source||"")}<br>Sorted by gap — the top rows are common in reality but rarely named here.`;
+}
+
+/* ---------- 3. how many risks per comment ---------- */
+function drawHist(){
+  const rs = sel(null), N = rs.length;
+  const h = new Map();
+  rs.forEach(r => { const k=Math.min(6, r.risk.filter(b=>b!=="none_mentioned").length); h.set(k,(h.get(k)||0)+1); });
+  const max = Math.max(1, ...h.values());
+  const lbl = k => k===0 ? (LANG==="th"?"ไม่ระบุ":"none") : (k===6 ? "6+" : String(k));
+  const withR = rs.filter(r=>r.risk.some(b=>b!=="none_mentioned"));
+  const avg = withR.length ? withR.reduce((s,r)=>s+new Set(r.risk.filter(b=>b!=="none_mentioned")).size,0)/withR.length : 0;
+  document.getElementById("histN").textContent = LANG==="th" ? `เฉลี่ย ${avg.toFixed(1)} ข้อ` : `avg ${avg.toFixed(1)}`;
+  document.getElementById("hist").innerHTML = [0,1,2,3,4,5,6].map(k => {
+    const n=h.get(k)||0;
+    return `<div class="hcol" title="${n} ${LANG==="th"?"คอมเมนต์":"comments"} (${(100*n/N).toFixed(0)}%)">
+      <span class="hn">${n||""}</span>
+      <span class="hb" style="height:${Math.max(3, Math.round(120*n/max))}px"></span>
+      <span class="hx">${lbl(k)}</span></div>`;
+  }).join("");
+  document.getElementById("histNote").textContent = LANG==="th"
+    ? "จำนวนความเสี่ยงที่คนหนึ่งคนพิมพ์ในคอมเมนต์เดียว — ส่วนใหญ่ตอบข้อเดียว แต่มีคนไล่ยาวถึง 11 ข้อ"
+    : "Risks named in a single comment — most name one, a few list up to 11.";
 }
 
 /* ---------- lived experience vs speculation ---------- */
@@ -734,6 +864,9 @@ function applyLang(){
   document.getElementById("h_cmp").textContent=x.cmp;
   document.getElementById("h_cooc").textContent=x.cooc;
   document.getElementById("h_matrix").textContent=x.matrix;
+  document.getElementById("h_ev").textContent=x.ev;
+  document.getElementById("h_real").textContent=x.real;
+  document.getElementById("h_hist").textContent=x.hist;
   document.getElementById("h_verb").textContent=x.verb;
   document.getElementById("lblVerbAll").textContent=x.verbAll;
   document.getElementById("h_raw").textContent=x.raw;
@@ -753,7 +886,7 @@ function render(){
   document.getElementById("lvGroup").className = F.level==="group" ? "on" : "";
   document.getElementById("lvRisk").className  = F.level==="risk"  ? "on" : "";
   document.getElementById("riskN").textContent = `${LANG==="th"?"เลือกได้หลายข้อ":"multi-label"} · ${rk.length}`;
-  drawCloud(globalBase()); drawCompare(); drawCooc(); drawHeat();
+  drawCloud(globalBase()); drawEvidence(); drawReal(); drawHist(); drawCompare(); drawCooc(); drawHeat();
   drawViewbar(); drawTiles(); drawChips(); drawVerbatim(); drawTable();
 }
 

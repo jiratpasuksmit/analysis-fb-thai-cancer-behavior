@@ -39,6 +39,17 @@ NOT_NAMES = {
     "coca cola","big c","central world","covid","long covid","the one","new york",
     "pm two","air pollution","world health","health organization","of course",
 }
+# Names confirmed by reading all 419 on-topic rows by hand (2026-08-30). Pattern
+# matching missed these: initials, diacritics, and names fused to Thai text.
+REVIEWED_NAMES = [
+    "Aelly Siwakornmetasit", "Ken Luenthaisong", "Tanisorn Pongtanesuan",
+    "Thaweesak Khemchoknawee", "Naruedon Maneewan", "Phobchok Ploymukda",
+    "Davarin Chankhum", "Boonma Thanapat", "Max Phutthimet", "Zine Wannisa",
+    "Alisa Stamp", "Mo Moo",
+    "Witsarut P K-ros", "Pätcharee Saelëë", "Mink Chruaphet", "อี๊ฟ อรทัย",
+    "S.tower", "Jobi SK Nyrhinen", "Fantar NG", "Nguansuk",
+]
+
 LATIN_NAME = re.compile(r"\b[A-Z][a-z']{2,}(?:\s+[A-Z][a-z'.]{1,}){1,2}\b")
 THAI_TITLE_NAME = re.compile(r"(?:อ|นพ|พญ|ดร)\.\s?[ก-๙]{2,15}")
 # คุณ/พี่/หมอ + a word is usually kinship or a common noun, not a name — reported, not scrubbed
@@ -48,6 +59,9 @@ THAI_KIN = ("แม่","พ่อ","ยาย","ตา","ป้า","ลุง"
 def strip_typed_names(text: str) -> tuple[str, list[str]]:
     """Replace name-shaped strings the mention list never knew about."""
     found = []
+    for n in sorted(REVIEWED_NAMES, key=len, reverse=True):
+        if n in text:
+            found.append(n); text = text.replace(n, "[ชื่อ]")
     def latin(m):
         if m.group(0).lower() in NOT_NAMES:
             return m.group(0)
@@ -61,6 +75,7 @@ def strip_typed_names(text: str) -> tuple[str, list[str]]:
 
 CONTACT = [
     (re.compile(r"https?://\S+"), "[ลิงก์]"),
+    (re.compile(r"\b(?:youtu\.be|youtube\.com)/\S+"), "[ลิงก์]"),
     (re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.]+\b"), "[อีเมล]"),
     (re.compile(r"(?<!\d)0\d[\s-]?\d{3}[\s-]?\d{4}(?!\d)"), "[เบอร์โทร]"),   # Thai mobile
     (re.compile(r"(?i)\b(line|ไลน์)\s*(id)?\s*[:：]?\s*[\w.\-]{3,}"), "[ไลน์]"),
@@ -91,8 +106,12 @@ def main():
     p.add_argument("--out", default="docs", help="output directory (GitHub Pages serves docs/ on main)")
     p.add_argument("--labels", default=str(HERE / "labels.json"))
     p.add_argument("--template", default=str(HERE / "dashboard_template.html"))
-    p.add_argument("--text", choices=["full", "short", "none"], default="short",
-                   help="how much comment text to publish (default: short)")
+    p.add_argument("--only-ontopic", action="store_true",
+                   help="drop off_topic and promotion rows entirely (544 -> 419)")
+    p.add_argument("--text", choices=["full", "short", "none"], default="none",
+                   help="how much comment text to publish. DEFAULT none, and that is deliberate: "
+                        "Thai personal names have no reliable pattern, so free comment text CANNOT "
+                        "be scrubbed of names by any regex. full/short will leak names.")
     p.add_argument("--text-max", type=int, default=200,
                    help="with --text short, comments longer than this are withheld")
     p.add_argument("--title", default="พฤติกรรมเสี่ยงมะเร็งที่คนไทยพูดถึง — What Thai Facebook commenters believe causes cancer")
@@ -116,8 +135,12 @@ def main():
     split = lambda v: [x for x in (v or "").split("|") if x]
     rows, withheld, scrubbed, skipped = [], 0, 0, 0
 
+    NOISE_REL = {"off_topic", "promotion"}
     for i, r in enumerate(judged, 1):
         if (r.get("judge_error") or "").strip():
+            skipped += 1
+            continue
+        if a.only_ontopic and r.get("relevance") in NOISE_REL:
             skipped += 1
             continue
         raw = r.get("body_only") or r.get("comment") or ""
@@ -207,6 +230,8 @@ def main():
                                  "short": x.get("short") or x.get("en", x["id"]),
                         "short_th": x.get("short_th") or x.get("short") or x.get("en", x["id"]),
                                  "match": x.get("match", []),
+                                 "iarc": x.get("iarc", "na"),
+                                 "iarc_note": x.get("iarc_note", ""),
                                  "th": x.get("th", "")} for x in labels.get(k, [])}
                    for k in ("relevance", "risk_behavior", "relation", "cancer_type", "behavior", "outcome")},
         "risk_group": [{"id": g["id"], "en": g.get("en", g["id"]),
@@ -214,6 +239,8 @@ def main():
                         "short_th": g.get("short_th") or g.get("short", g["id"])}
                        for g in labels.get("risk_group", [])],
         "risk_of_group": {x["id"]: x.get("group", "other_group") for x in labels.get("risk_behavior", [])},
+        "iarc_meta": labels.get("iarc_meta", {}),
+        "thai_incidence": labels.get("thai_incidence", {}),
         "records": [{
             "id": r["id"], "comment": r["comment"], "chars": r["chars"],
             "relevance": r["relevance"], "risk": split(r["risk_behaviors"]),
@@ -266,8 +293,14 @@ def main():
     if surviving or leaks:
         print("\n  !! Something identifying survived. Do not commit until this reads clean.")
         sys.exit(1)
-    print("\n  Clean. Note this still publishes people's health stories in their own words —")
-    print("  the text policy (--text none / short / full) is the lever, not the audit.\n")
+    if a.text != "none":
+        print("\n  !! --text %s publishes raw comment text. Name-scrubbing is BEST EFFORT only:" % a.text)
+        print("     Thai names (อี๊ฟ อรทัย), initials (Witsarut P K-ros), diacritics (Pätcharee Saelëë)")
+        print("     and names fused to Thai text (Mink Chruaphetที่บ่น) all defeat pattern matching.")
+        print("     Do not publish comment text unless a human has read every row.\n")
+    else:
+        print("\n  Clean. Comment text is withheld entirely (--text none), which is the only")
+        print("  setting where name-freedom is guaranteed rather than attempted.\n")
 
 
 if __name__ == "__main__":
